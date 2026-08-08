@@ -1,0 +1,1596 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#30ABA9">
+<title>Siempre al Día — Radar regulatorio DIAN</title>
+<style>
+/* ════════════════════════════════════════════════════════════════════════════
+   SISTEMA DE DISEÑO
+
+   Transcrito del diseño de Claude Design. Del mockup entró SOLO la forma: ni un
+   nodo de texto, ni un dato, ni una cita. Su marcado usa 197 estilos en línea y
+   un motor de plantillas propio, así que no se copió: se reconstruyó como CSS
+   con variables, que es lo que permite reestilizar sin tocar la lógica.
+
+   Para cambiar la piel se reemplaza este bloque :root. Nada de lo que sigue
+   trae un color, un tamaño ni un radio literal.
+   ════════════════════════════════════════════════════════════════════════════ */
+ :root{
+  /* El tablero es claro en CUALQUIER ajuste del sistema. Sin esta declaración,
+     iOS y Chrome lo oscurecen por su cuenta, y el resultado no es un diseño
+     aprobado: es una inversión automática que además destruye la distinción
+     entre los colores de severidad, que aquí son dato y no decoración. */
+  color-scheme:light;
+
+  /* ── IDENTIDAD DE ALEGRA ───────────────────────────────────────────────────
+     Leída del CSS vivo de www.alegra.com (variables `--lovable-color-*`), no
+     deducida de una captura. La rampa va verbatim. El primario de marca es el
+     600 (#30ABA9): es el que el sitio usa como fondo de botón y el único teal
+     de la rampa con contraste suficiente para texto blanco encima. Los teales
+     brillantes quedan para acento y logotipo, que es donde el sitio los usa. */
+  --p50:#EAFAFA; --p100:#CFF2F1; --p200:#B6ECE9; --p300:#9BE4E0; --p400:#72D5D1;
+  --p500:#30BBB7; --p600:#30ABA9; --p700:#299E9C; --p800:#208D8D; --p900:#1A7E7F;
+  --acento-teal:#06ECD0; --acento-esmeralda:#50EEA2; --acento-esmeralda-osc:#09C96D;
+  --teal-brillante:#00D6BC; --teal-isotipo:#00E0C7;
+  --marino:#001E3B;
+
+  /* Superficies, bordes y texto, también del CSS vivo. Los valores #1B222D,
+     #E6EBF0, #D5DDE5 y #EAF4F4 que veníamos usando NO existen en la hoja de la
+     marca; lo real es la rampa Slate que usa el sitio. */
+  --fondo:#F8FAFC; --fondo-alt:#F1F5F9; --superficie:#FFFFFF; --teal-suave:#EAFAFA;
+  --borde:#E2E8F0; --borde-fuerte:#CBD5E1;
+  --texto:#1E293B; --titular:#0F172A; --texto-secundario:#334155; --texto-tenue:#64748B;
+
+  --sev-bloqueante:#C0223B; --sev-bloqueante-bg:#FDECEF; --sev-bloqueante-borde:#F3C6CE;
+  --sev-mayor:#9A5B06;      --sev-mayor-bg:#FEF4E4;      --sev-mayor-borde:#F2DBB4;
+  --sev-menor:#3F5B76;      --sev-menor-bg:#EEF3F8;      --sev-menor-borde:#D5E1EC;
+  --sev-revision:#6B4BAE;   --sev-revision-bg:#F2EEFB;   --sev-revision-borde:#DDD3F2;
+
+  --gap-cubierto:#1A7E7F;      --gap-cubierto-bg:#EAFAFA;      --gap-cubierto-borde:#B6ECE9;
+  --gap-parcial:#9A5B06;       --gap-parcial-bg:#FEF4E4;       --gap-parcial-borde:#F2DBB4;
+  --gap-no_cubierto:#C0223B;   --gap-no_cubierto-bg:#FDECEF;   --gap-no_cubierto-borde:#F3C6CE;
+  --gap-sin_evidencia:#64748B; --gap-sin_evidencia-bg:#F1F5F9; --gap-sin_evidencia-borde:#CBD5E1;
+
+  /* Estado de la cita: TRES, no dos. El mockup solo conoce dos; manda el contrato. */
+  --cita-verificada:#1A7E7F;           --cita-verificada-bg:#EAFAFA;           --cita-verificada-borde:#B6ECE9;
+  --cita-no_verifica:#C0223B;          --cita-no_verifica-bg:#FDECEF;          --cita-no_verifica-borde:#F3C6CE;
+  --cita-no_se_pudo_comprobar:#6B4BAE; --cita-no_se_pudo_comprobar-bg:#F2EEFB; --cita-no_se_pudo_comprobar-borde:#DDD3F2;
+
+  --nuevo:#0B6B49; --nuevo-bg:#E6FBF0; --nuevo-borde:#BDEBD3;
+  --diff-mas-bg:#DFF7EA; --diff-mas:#0A5638;
+  --diff-menos-bg:#FDECEF; --diff-menos:#8C2033;
+
+  /* Inter es la familia del sitio, que la sirve como TTF propio. NO se carga
+     por red: la página sigue autocontenida. Se usa si el sistema la tiene y, si
+     no, la cascada cae en las grotescas de interfaz, que son las que más se le
+     parecen en ancho y altura de x. El interletrado .16px es el `.01rem` del
+     sitio a 16px de raíz. */
+  --fuente:Inter,"Inter var",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,
+   "Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --interletra:.16px;
+
+  /* ── ESCALA TIPOGRÁFICA ────────────────────────────────────────────────────
+     Una sola decisión aplicada a todas las piezas. Antes cada caja escogía su
+     tamaño por su cuenta, y por eso el tablero se sentía hecho a retazos: diez
+     decisiones que no conversaban entre sí. */
+  --t-micro:11px;   --t-micro-l:15px;
+  --t-mini:12px;    --t-mini-l:17px;
+  --t-menor:13px;   --t-menor-l:19px;
+  --t-base:14px;    --t-base-l:21px;
+  --t-cuerpo:15px;  --t-cuerpo-l:23px;
+  --t-medio:16px;   --t-medio-l:25px;
+  --t-titulo:18px;  --t-titulo-l:26px;
+  --t-panel:20px;   --t-panel-l:28px;
+  --t-cifra:34px;   --t-cifra-l:38px;
+  --t-heroe:32px;   --t-heroe-l:38px;
+
+  /* ── ESCALA DE ESPACIADO ─────────────────────────────────────────────────── */
+  --e1:4px; --e2:8px; --e3:12px; --e4:16px; --e5:20px; --e6:28px; --e7:40px;
+
+  --ancho:1280px;
+  --radio:10px; --radio-lg:16px; --radio-chip:6px; --radio-pastilla:999px;
+  --sombra:0 1px 2px rgba(15,23,42,.04), 0 12px 32px -16px rgba(15,23,42,.18);
+  --sombra-alta:0 2px 4px rgba(15,23,42,.04), 0 28px 60px -30px rgba(15,23,42,.28);
+ }
+ /* NO hay bloque de modo oscuro. El tablero se ve igual en cualquier ajuste del
+    sistema: no existe un diseño oscuro aprobado, y el que aplicaba el navegador
+    por su cuenta rompía la distinción entre severidades. */
+
+ *{box-sizing:border-box}
+ /* Ninguna pieza puede ser más ancha que su contenedor. Es la red que evita el
+    desplazamiento lateral en móvil sin recurrir a `overflow-x:hidden`, que
+    esconde el síntoma dejando contenido fuera de alcance. */
+ img,svg,table,pre,blockquote{max-width:100%}
+ /* `hidden` tiene que ganar: varios nodos llevan display en linea y el
+    atributo se quedaria sin efecto, mostrando controles que deben estar ocultos. */
+ [hidden]{display:none !important}
+ body{margin:0;background:var(--fondo);color:var(--texto);
+  font:var(--t-cuerpo)/var(--t-cuerpo-l) var(--fuente);
+  letter-spacing:var(--interletra);-webkit-font-smoothing:antialiased;
+  /* Safari en iOS agranda el texto al girar el teléfono si no se le dice que no. */
+  -webkit-text-size-adjust:100%;text-size-adjust:100%}
+ /* Una palabra sin espacios más ancha que su caja —una URL, un identificador—
+    es la causa más común de desplazamiento lateral. Se parte. */
+ p,li,td,th,blockquote,.rr,.gd,.df,.preg,.nota,.vd{overflow-wrap:anywhere}
+ a{color:var(--p900);overflow-wrap:anywhere}
+ a:hover{text-decoration:underline}
+ button,input,select{font:inherit;letter-spacing:inherit}
+ input::placeholder{color:var(--texto-tenue)}
+ @keyframes pulso{0%{opacity:1}50%{opacity:.35}100%{opacity:1}}
+ .lat{max-width:var(--ancho);margin:0 auto;padding-left:20px;padding-right:20px}
+
+ /* — cabecera fija — */
+ /* PRESENCIA DE MARCA EN ESCRITORIO.
+    En el teléfono, Safari tiñe su propia barra con el `theme-color` y por eso la
+    pantalla se ve «de Alegra». En escritorio no existe ese equivalente, así que
+    la marca la pone la página: una banda de marca sobre la cabecera —el mismo
+    teal del theme-color— y un lavado teal en la cabecera y los separadores.
+    Nada de esto toca los colores de severidad ni de estado, que son datos. */
+ .banda-marca{height:4px;background:linear-gradient(90deg,var(--acento-teal),
+  var(--p600) 45%,var(--p800))}
+ .barra{position:sticky;top:0;z-index:30;
+  background:color-mix(in srgb,var(--p50) 55%,var(--superficie));
+  backdrop-filter:blur(10px);border-bottom:1px solid var(--p200)}
+ .barra .lat{padding-top:12px;padding-bottom:12px;display:flex;flex-wrap:wrap;
+  gap:12px 20px;align-items:center;justify-content:space-between}
+ .marca{display:flex;align-items:center;gap:12px;min-width:0}
+ /* Isotipo de Alegra: el abanico de cuatro trazos, tomado del SVG del propio
+    sitio y embebido aquí. Mismo hueco de 34px que ocupaba el glifo genérico:
+    ni crece ni se mueve. Sin imagen remota y sin archivo aparte. */
+ .glifo{width:34px;height:34px;flex-shrink:0;display:flex;
+  align-items:center;justify-content:center}
+ .glifo svg{width:34px;height:34px;display:block}
+ .marca .n{font-weight:600;font-size:16px;line-height:20px;color:var(--titular)}
+ .marca .s{font-size:12px;line-height:16px;color:var(--texto-tenue)}
+ .pildora{display:flex;align-items:center;gap:8px;background:var(--teal-suave);
+  border:1px solid var(--p200);border-radius:var(--radio-pastilla);padding:5px 12px 5px 10px;
+  font-size:13px;line-height:16px;font-weight:500;color:var(--p900)}
+ .late{width:8px;height:8px;border-radius:50%;background:var(--p600);flex:none;
+  animation:pulso 2.4s ease-in-out infinite}
+ .distintivo{font-size:12px;line-height:16px;font-weight:500;color:var(--texto-tenue);
+  border:1px dashed var(--borde-fuerte);border-radius:var(--radio-pastilla);padding:5px 10px}
+
+ /* — titular — */
+ .heroe{border-bottom:1px solid var(--borde);
+  background:linear-gradient(180deg,color-mix(in srgb,var(--p50) 55%,var(--superficie)) 0%,
+   color-mix(in srgb,var(--p50) 22%,var(--superficie)) 55%,var(--fondo) 100%)}
+ .heroe .lat{padding-top:32px;padding-bottom:28px}
+ .heroe .hfila{display:flex;flex-wrap:wrap;gap:20px;align-items:flex-end;
+  justify-content:space-between;margin-bottom:24px}
+ .ceja{font-size:12px;line-height:16px;font-weight:600;letter-spacing:1.4px;
+  text-transform:uppercase;color:var(--p800);margin-bottom:10px}
+ /* Los clamp() con vw se disparaban en pantallas estrechas porque el mínimo
+    estaba pensado para escritorio. Ahora el mínimo es el tamaño de móvil y el
+    vw solo hace crecer, nunca encoger por debajo de lo legible. */
+ h1{margin:0;font-size:clamp(24px,4.2vw,var(--t-heroe));line-height:1.16;font-weight:600;
+  color:var(--titular);letter-spacing:-.4px;text-wrap:pretty}
+ .entrada{margin:12px 0 0;font-size:16px;line-height:24px;color:var(--texto-secundario);
+  text-wrap:pretty;max-width:640px}
+ .origen{display:flex;align-items:center;gap:10px;background:var(--superficie);
+  border:1px solid var(--borde);border-radius:var(--radio);padding:10px 14px;
+  box-shadow:var(--sombra)}
+ .origen .pt{width:8px;height:8px;border-radius:50%;flex:0 0 auto;
+  background:var(--acento-esmeralda-osc)}
+ .origen.respaldo .pt{background:var(--texto-tenue)}
+ .origen .a{font-size:13px;line-height:16px;font-weight:600;color:var(--titular)}
+ .origen .b{font-size:12px;line-height:16px;color:var(--texto-tenue)}
+
+ /* — tarjetas de métrica — */
+ .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}
+ .kpi{background:var(--superficie);border:1px solid var(--borde);border-radius:var(--radio-lg);
+  padding:20px 20px 18px;box-shadow:var(--sombra);display:flex;flex-direction:column;gap:6px}
+ .kpi .et{font-size:11px;line-height:14px;font-weight:600;letter-spacing:1.3px;
+  text-transform:uppercase;color:var(--texto-tenue)}
+ .kpi .v{display:flex;align-items:baseline;gap:8px}
+ .kpi .v b{font-size:clamp(28px,5vw,var(--t-cifra));line-height:1.05;font-weight:600;
+  letter-spacing:-1.4px}
+ .kpi .v span{font-size:14px;line-height:18px;font-weight:500;color:var(--texto-tenue)}
+ .kpi .nota{font-size:13px;line-height:18px;color:var(--texto-secundario);text-wrap:pretty}
+ .kpi .rot{margin-top:2px;font-size:12px;line-height:16px;font-weight:600;
+  color:var(--sev-mayor);background:var(--sev-mayor-bg);border:1px solid var(--sev-mayor-borde);
+  border-radius:8px;padding:4px 8px;display:inline-block}
+
+ /* — cuerpo — */
+ .cuerpo{padding-top:24px;padding-bottom:60px;display:flex;flex-direction:column;gap:24px}
+ /* Acento de marca en el borde superior de cada panel de sección. */
+ .panel{background:var(--superficie);border:1px solid var(--borde);
+  border-top:3px solid var(--p600);
+  border-radius:var(--radio-lg);box-shadow:var(--sombra);overflow:hidden}
+ .glosario,.crono{border-top:3px solid var(--p400)}
+ .panel > .cab{display:flex;flex-wrap:wrap;gap:10px;align-items:center;
+  justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--borde);
+  background:linear-gradient(90deg,color-mix(in srgb,var(--p50) 40%,var(--superficie)),var(--superficie))}
+ .panel > .cab h2{margin:0;font-size:15px;line-height:20px;font-weight:600;color:var(--titular)}
+ .panel > .cab .der{font-size:12px;line-height:16px;color:var(--texto-tenue)}
+
+ /* — estado de las capas — */
+ .capas{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+ /* La línea de cadencia: pie del panel de estado, no una capa más. */
+ .cadencia{margin:0;padding:var(--e2) var(--e4) var(--e3);border-top:1px solid var(--borde);
+  font-size:var(--t-mini);line-height:var(--t-mini-l);color:var(--texto-tenue);
+  text-align:left;text-wrap:pretty}
+ .cadencia a{color:var(--p900);text-decoration:underline;text-underline-offset:2px}
+ .capa{padding:18px 20px;border-right:1px solid var(--borde)}
+ .capa:last-child{border-right:none}
+ .capa .top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
+ .capa .clave{font-size:11px;font-weight:700;letter-spacing:1px;color:var(--p800);
+  background:var(--p50);border:1px solid var(--p200);border-radius:var(--radio-chip);padding:2px 7px}
+ .capa .nom{font-size:14px;line-height:18px;font-weight:600;color:var(--titular)}
+ .capa .est{font-size:12px;line-height:16px;font-weight:600}
+ .capa .est.aldia{color:var(--gap-cubierto)}
+ .capa .est.degradado{color:var(--sev-mayor)}
+ .capa .preg{font-size:13px;line-height:19px;color:var(--texto-secundario);
+  margin-bottom:10px;text-wrap:pretty}
+ .capa .meta{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;line-height:16px;
+  color:var(--texto-tenue)}
+ .capa .inc{margin-top:10px;font-size:12px;line-height:17px;color:var(--sev-mayor);
+  background:var(--sev-mayor-bg);border:1px solid var(--sev-mayor-borde);
+  border-radius:8px;padding:7px 9px}
+
+ /* — glosario — */
+ /* Glosario: mismo contenido y mismo tratamiento, menos alto. Se compacta con
+    columnas más estrechas —de 230px a 200px, así entran más por fila— y con
+    interlineado e interespacio de la escala, no quitando términos. */
+ .glosario{background:var(--fondo-alt);border:1px solid var(--borde);
+  border-radius:var(--radio-lg);padding:var(--e3) var(--e4)}
+ .glosario .tit{font-size:var(--t-micro);line-height:var(--t-micro-l);font-weight:600;
+  letter-spacing:1.3px;text-transform:uppercase;color:var(--texto-tenue);
+  margin-bottom:var(--e3);display:flex;flex-wrap:wrap;gap:var(--e3);
+  align-items:baseline;justify-content:space-between}
+ .volver-glosario,.ir-glosario{font-size:var(--t-menor);line-height:var(--t-menor-l);
+  font-weight:600;letter-spacing:0;text-transform:none;color:var(--p800);
+  text-decoration:none;white-space:nowrap}
+ .volver-glosario:hover,.ir-glosario:hover{text-decoration:underline}
+ #glosario-bloque{scroll-margin-top:var(--e5)}
+ #tope-lista{display:block;scroll-margin-top:var(--e5)}
+ /* LISTA DE CONVENCIONES, no rejilla.
+    Antes era una rejilla de columnas estrechas, y como las filas de una rejilla
+    igualan su altura a la de la celda más alta, el distintivo largo de «requiere
+    revisión humana» dejaba su columna en cuatro palabras por línea e inflaba las
+    otras cuatro celdas de su fila con hueco vacío. Bajar la letra lo empeoraba:
+    más caracteres en una columna estrecha son más saltos de línea.
+    Con columnas de texto, cada entrada ocupa lo que necesita y la definición
+    fluye a todo el ancho, envolviéndose por debajo del distintivo. */
+ .glosario .rej{columns:2;column-gap:var(--e7)}
+ @media (min-width:1100px){.glosario .rej{columns:3}}
+ @media (max-width:720px){.glosario .rej{columns:1}}
+ .glosario .it{break-inside:avoid;margin:0 0 var(--e3);
+  font-size:var(--t-mini);line-height:var(--t-mini-l);color:var(--texto-secundario);
+  text-wrap:pretty}
+ /* El distintivo va EN LÍNEA: así el texto continúa a su lado y baja a todo el
+    ancho de la columna, en vez de quedar encajonado en una celda contigua. */
+ .glosario .it .chip{display:inline;margin-right:var(--e2)}
+ .chip{flex:0 0 auto;font-size:11px;line-height:16px;font-weight:700;
+  border:1px solid;border-radius:var(--radio-chip);padding:1px 7px;white-space:nowrap}
+
+ /* — pestañas — */
+ .pestanas{display:flex;gap:8px;border-bottom:1px solid var(--borde)}
+ .pestanas button{background:none;border:none;border-bottom:2px solid transparent;
+  color:var(--texto-tenue);font-size:15px;font-weight:600;padding:10px 4px;
+  margin-bottom:-1px;cursor:pointer}
+ .pestanas button[aria-selected="true"]{border-bottom-color:var(--p600);color:var(--titular)}
+
+ /* — controles — */
+ .controles{background:var(--superficie);border:1px solid var(--borde);
+  border-radius:var(--radio-lg);padding:16px;box-shadow:var(--sombra);
+  position:sticky;top:64px;z-index:20}
+ .controles .f1{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+ .busca{flex:1 1 260px;display:flex;align-items:center;gap:8px;
+  border:1px solid var(--borde-fuerte);border-radius:var(--radio);padding:8px 12px;
+  background:var(--superficie)}
+ .busca span{color:var(--texto-tenue);font-size:15px}
+ /* 16px, no 15: por debajo de 16 Safari en iOS amplía la página entera al
+    enfocar el campo y hay que pellizcar para volver. No era la causa de la caja
+    gigante —esa es la base de flex volteada, más abajo— pero es un defecto real. */
+ .busca input{flex:1;border:none;outline:none;font-size:16px;line-height:22px;
+  color:var(--texto);background:transparent;min-width:0}
+ .sel{border:1px solid var(--borde-fuerte);border-radius:var(--radio);padding:9px 12px;
+  font-size:14px;color:var(--texto-secundario);background:var(--superficie)}
+ .f2{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;align-items:center}
+ .fsev{display:flex;align-items:center;gap:6px;border:1px solid;border-radius:var(--radio-pastilla);
+  padding:5px 12px;font-size:13px;line-height:18px;font-weight:600;cursor:pointer}
+ .fsev .n{font-weight:500;opacity:.7}
+ .fsev[aria-pressed="false"]{opacity:.42}
+ .selp{border:1px solid var(--borde-fuerte);border-radius:var(--radio-pastilla);
+  padding:6px 12px;font-size:13px;color:var(--texto-secundario);background:var(--superficie)}
+ .tiempo{display:flex;align-items:center;gap:4px;flex-wrap:wrap;
+  border:1px solid var(--borde-fuerte);background:var(--superficie);
+  border-radius:var(--radio-pastilla);padding:3px 8px 3px 11px}
+ .tiempo.on{border-color:var(--p400);background:var(--teal-suave)}
+ .tiempo .r{font-size:12px;line-height:18px;font-weight:600;letter-spacing:.5px;
+  text-transform:uppercase;color:var(--texto-tenue)}
+ .tiempo select{border:none;outline:none;background:transparent;font-size:13px;
+  line-height:18px;color:var(--texto-secundario);padding:3px 2px;cursor:pointer}
+ .tiempo select.campo{font-weight:600}
+ .tiempo .div{width:1px;height:16px;background:var(--borde-fuerte)}
+ .tiempo input[type="date"]{border:1px solid var(--borde-fuerte);border-radius:8px;
+  padding:2px 6px;font-size:12.5px;line-height:18px;color:var(--texto-secundario);
+  background:var(--superficie)}
+ .f3{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;
+  margin-top:12px;padding-top:12px;border-top:1px solid var(--borde)}
+ .contador{font-size:13px;line-height:18px;font-weight:600;border:1px solid;
+  border-radius:8px;padding:4px 10px}
+ .bt{background:none;border:1px solid var(--borde-fuerte);border-radius:8px;
+  padding:4px 10px;font-size:13px;color:var(--texto-secundario);cursor:pointer}
+ .bt:hover{background:var(--fondo-alt)}
+
+ /* — tablero: lista + detalle — */
+ .tablero{display:grid;grid-template-columns:1fr;gap:16px;align-items:start}
+ .tablero.condetalle{grid-template-columns:minmax(0,1fr) minmax(0,1.05fr)}
+ /* Las anulaciones de móvil viven al FINAL de la hoja, no aquí. Estaban en este
+    punto y las reglas base de `#detalle` y `.detalle`, escritas después con la
+    misma especificidad, las pisaban: en el teléfono el panel seguía siendo
+    `sticky` con un `max-height` calculado sobre la altura del cromo, que en
+    móvil es enorme. De ahí el "bloque recortado". */
+ .volver{display:none;align-items:center;gap:var(--e1);background:none;
+  border:1px solid var(--borde-fuerte);border-radius:var(--radio);
+  padding:6px 14px;font-size:var(--t-base);font-weight:500;
+  color:var(--texto-secundario);cursor:pointer;margin-bottom:var(--e3)}
+ /* En escritorio el detalle solo se cerraba volviendo a tocar la MISMA fila, que
+    no se adivina: el panel se abría y no había forma visible de salir. El botón
+    de volver es de móvil, donde el detalle es su propia vista; aquí la acción no
+    es «volver» sino «cerrar», y va en la esquina de la cabecera. Comparte el
+    `data-volver` con el de móvil: misma acción, un solo camino en el JS. */
+ .cerrar{position:absolute;top:12px;right:14px;display:inline-flex;
+  align-items:center;justify-content:center;width:30px;height:30px;
+  border:1px solid var(--borde);border-radius:var(--radio-chico);
+  background:var(--superficie);color:var(--texto-secundario);
+  font-size:17px;line-height:1;cursor:pointer}
+ .cerrar:hover{color:var(--titular);border-color:var(--borde-fuerte)}
+ .cerrar:focus-visible{outline:2px solid var(--p600);outline-offset:2px}
+ .lista{display:flex;flex-direction:column;gap:22px}
+ .grupo{display:flex;flex-direction:column;gap:8px}
+ .grupo .gc{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+ .grupo h2{margin:0;font-size:13px;line-height:18px;font-weight:600;letter-spacing:.6px;
+  text-transform:uppercase}
+ .grupo .gs{font-size:12.5px;color:var(--texto-tenue)}
+ .grupo .gn{font-size:12.5px;line-height:18px;color:var(--texto-secundario);
+  background:var(--fondo-alt);border:1px solid var(--borde);border-radius:10px;
+  padding:8px 11px;max-width:70ch;text-wrap:pretty}
+ .fila{display:flex;gap:12px;align-items:center;justify-content:space-between;width:100%;
+  text-align:left;font:inherit;cursor:pointer;padding:9px 14px;background:var(--superficie);
+  border:1px solid var(--borde);border-left:4px solid;border-radius:12px;
+  box-shadow:var(--sombra);scroll-margin-top:250px}
+ .fila:hover{box-shadow:var(--sombra-alta)}
+ .fila[aria-current="true"]{background:var(--teal-suave);border-color:var(--p300)}
+ .fila .izq{min-width:0;display:flex;flex-direction:column;gap:2px;flex:1 1 auto}
+ .fila .l1{display:flex;align-items:center;gap:8px;min-width:0}
+ .fila .tt{font-size:15px;line-height:21px;font-weight:600;color:var(--titular);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+ .fila .ar{font-size:12.5px;line-height:18px;color:var(--texto-tenue);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;max-width:100%}
+ .fila .der{flex:0 0 auto;display:flex;align-items:center;gap:14px}
+ .fila .dias{display:flex;flex-direction:column;align-items:flex-end;min-width:56px}
+ .fila .dias b{font-size:22px;line-height:26px;font-weight:600;letter-spacing:-.8px}
+ .fila .dias span{font-size:10.5px;line-height:14px;color:var(--texto-tenue)}
+ .chipg{font-size:11px;line-height:16px;font-weight:600;border:1px solid;
+  border-radius:var(--radio-chip);padding:2px 8px;white-space:nowrap}
+ .nuevo{flex:0 0 auto;font-size:11px;line-height:15px;font-weight:700;color:var(--nuevo);
+  background:var(--nuevo-bg);border:1px solid var(--nuevo-borde);
+  border-radius:var(--radio-chip);padding:1px 7px}
+
+ /* — panel de detalle, con su propio desplazamiento — */
+ /* El panel se pega DEBAJO del cromo fijo (cabecera + controles), cuya altura
+    cambia según cuántos filtros quepan por línea. Se mide en tiempo real y se
+    publica como variable; fijarla a ojo deja tapada la cabecera del detalle. */
+ /* El sticky va en el ELEMENTO DE LA RETÍCULA, no en el panel de dentro: un
+    sticky solo recorre dentro de su bloque contenedor, y el panel mide lo mismo
+    que su envoltorio, así que ahí no tendría recorrido y viajaría con la página
+    hasta meterse debajo de los controles fijos. El área de la retícula, en
+    cambio, es tan alta como la lista. */
+ /* El panel usa la altura REAL de la ventana que le queda libre, no un alto fijo:
+    `dvh` en vez de `vh` para que en móvil no cuente la barra del navegador que
+    se retrae. Menos caja y menos desplazamiento interno. */
+ #detalle{position:sticky;top:calc(var(--alto-fijo, 290px) + 12px)}
+ .detalle{background:var(--superficie);border:1px solid var(--borde);
+  border-radius:var(--radio-lg);box-shadow:var(--sombra-alta);overflow:auto;
+  max-height:calc(100dvh - var(--alto-fijo, 290px) - 28px)}
+ .detalle .dcab{position:sticky;top:0;z-index:2;padding:16px 22px 14px;
+  padding-right:58px;   /* hueco reservado para el control de cerrar */
+  background:color-mix(in srgb,var(--superficie) 96%,transparent);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--borde)}
+ .detalle h3{margin:0;font-size:var(--t-panel);line-height:var(--t-panel-l);font-weight:600;
+  color:var(--titular);letter-spacing:-.2px;text-wrap:pretty}
+ .detalle .dsub{margin-top:var(--e1);font-size:var(--t-menor);line-height:var(--t-menor-l);
+  color:var(--texto-tenue);text-wrap:pretty}
+ .detalle .dcuerpo{padding:var(--e4) var(--e5) 0;display:flex;flex-direction:column;gap:var(--e4)}
+ .rotulo{font-size:var(--t-micro);line-height:var(--t-micro-l);font-weight:600;
+  letter-spacing:1.2px;text-transform:uppercase;color:var(--texto-tenue);margin-bottom:var(--e1)}
+ /* El cuerpo del detalle bajó de 16/28 a la escala de lectura: el recuadro
+    estaba bien de tamaño, la letra era la que obligaba a desplazarse de más. */
+ .impacto{margin:0;font-size:var(--t-base);line-height:var(--t-base-l);color:var(--texto);
+  max-width:74ch;text-wrap:pretty}
+ .caja{background:var(--fondo);border:1px solid var(--borde);border-radius:12px;
+  padding:var(--e3) var(--e4)}
+ .caja p{margin:0;font-size:var(--t-base);line-height:var(--t-base-l);
+  color:var(--texto-secundario);max-width:74ch;text-wrap:pretty}
+ .diff{border:1px solid var(--borde);border-radius:12px;overflow:hidden}
+ .diff .dh{display:flex;flex-wrap:wrap;gap:8px;align-items:center;
+  padding:10px 14px;background:var(--fondo-alt);
+  font-size:var(--t-menor);line-height:var(--t-menor-l);font-weight:600;
+  color:var(--titular);cursor:pointer;list-style:none}
+ .diff .dh::-webkit-details-marker{display:none}
+ /* Triángulo propio: indica que el bloque se pliega sin depender del marcador
+    del navegador, que cada uno dibuja distinto. */
+ .diff .dh::before{content:"▸";color:var(--p700);font-size:11px;transition:transform .15s}
+ .diff[open] .dh::before{transform:rotate(90deg)}
+ .diff[open] .dh{border-bottom:1px solid var(--borde)}
+ .diff .dh > span:first-of-type{margin-right:auto}
+ .diff .db{padding:14px 16px;display:flex;flex-direction:column;gap:12px}
+ .diff .nota{font-size:12px;line-height:17px;color:var(--texto-tenue);text-wrap:pretty}
+ /* Monoespaciada y sin espacios: es el otro sospechoso clásico de desbordamiento.
+    Se parte por cualquier punto. */
+ .diff .txt{font-size:var(--t-menor);line-height:var(--t-base-l);color:var(--texto);
+  font-family:var(--mono);letter-spacing:0;overflow-wrap:anywhere}
+ .diff .txt ins{background:var(--diff-mas-bg);border-bottom:2px solid var(--acento-esmeralda-osc);
+  color:var(--diff-mas);padding:1px 2px;text-decoration:none}
+ .diff .txt del{background:var(--diff-menos-bg);color:var(--diff-menos);padding:1px 2px}
+ .cita{background:var(--teal-suave);border:1px solid var(--p200);border-radius:12px;padding:14px 16px}
+ .cita .ch{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;
+  margin-bottom:8px}
+ .cita .ct{font-size:11px;line-height:14px;font-weight:600;letter-spacing:1.2px;
+  text-transform:uppercase;color:var(--p900)}
+ .cita blockquote{margin:0;padding-left:14px;border-left:3px solid var(--p400);
+  font-size:15px;line-height:25px;color:var(--texto);font-style:italic;text-wrap:pretty}
+ .bp{background:var(--p600);border:none;border-radius:10px;padding:6px 16px;font-size:13px;
+  font-weight:500;color:#fff;cursor:pointer}
+ .bp:hover{background:var(--p700)}
+ .dgap{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start}
+ .dgap .gc{flex:1 1 260px;border:1px solid;border-radius:12px;padding:12px 14px}
+ .dgap .gt{font-size:11.5px;line-height:16px;font-weight:700}
+ .dgap .gd{font-size:13px;line-height:21px;color:var(--texto-secundario);max-width:70ch;
+  text-wrap:pretty}
+ .dgap .ge{font-size:12px;line-height:17px;color:var(--texto-tenue);margin-top:6px}
+ .dgap .enl{flex:1 1 220px;font-size:13px;line-height:20px;display:flex;
+  flex-direction:column;gap:6px}
+ .dpie{margin-top:16px;padding:12px 22px;border-top:1px solid var(--borde);
+  background:var(--fondo);display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;
+  justify-content:space-between;font-size:12px;line-height:18px;color:var(--texto-tenue)}
+
+ /* — estado vacío — */
+ .vacio{background:var(--superficie);border:1px dashed var(--borde-fuerte);
+  border-radius:var(--radio-lg);padding:48px 24px;text-align:center}
+ .vacio .aro{width:44px;height:44px;margin:0 auto 14px;border-radius:50%;
+  background:var(--teal-suave);border:1px solid var(--p200);display:flex;
+  align-items:center;justify-content:center}
+ .vacio .aro span{width:10px;height:10px;border-radius:50%;background:var(--p600);
+  animation:pulso 2.4s ease-in-out infinite}
+ .vacio .vt{font-size:20px;line-height:28px;font-weight:600;color:var(--titular)}
+ .vacio .vd{font-size:15px;line-height:23px;color:var(--texto-secundario);
+  max-width:62ch;margin:8px auto 0;text-wrap:pretty}
+ .vacio .va{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:16px}
+
+ /* — cronología — */
+ .crono{background:var(--superficie);border:1px solid var(--borde);
+  border-radius:var(--radio-lg);box-shadow:var(--sombra);padding:22px}
+ .crono h2{margin:0 0 4px;font-size:18px;line-height:24px;font-weight:600;color:var(--titular)}
+ .crono .cp{margin:0 0 20px;font-size:14px;line-height:21px;color:var(--texto-secundario)}
+ .crono .saltar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:18px;
+  padding-bottom:16px;border-bottom:1px solid var(--borde)}
+ .crono .saltar .r{font-size:11px;line-height:16px;font-weight:600;letter-spacing:1.2px;
+  text-transform:uppercase;color:var(--texto-tenue)}
+ .crono .saltar a{font-size:13px;line-height:18px;font-weight:600;color:var(--p900);
+  background:var(--teal-suave);border:1px solid var(--p200);border-radius:var(--radio-pastilla);
+  padding:4px 12px;text-decoration:none}
+ .filtros-docs{display:flex;flex-wrap:wrap;gap:var(--e2);align-items:center;
+  margin-bottom:var(--e4)}
+ .filtros-docs .cuenta{margin-left:auto;font-size:var(--t-menor);color:var(--texto-tenue)}
+ #pubs td:nth-child(1){white-space:nowrap;width:1%}
+ #pubs td:nth-child(3){white-space:nowrap;width:1%;color:var(--texto-tenue)}
+ .marca-anio{display:flex;gap:14px;align-items:center;padding:6px 0 10px;scroll-margin-top:260px}
+ .marca-anio .a{flex:0 0 96px;text-align:right;font-size:22px;line-height:28px;
+  font-weight:600;letter-spacing:-.6px;color:var(--titular)}
+ .marca-anio .l{flex:0 0 auto;display:flex;justify-content:center;width:10px}
+ .marca-anio .l i{width:1px;height:28px;background:var(--borde);display:block}
+ .marca-anio .r{flex:1;display:flex;align-items:center;gap:10px;min-width:0}
+ .marca-anio .r span{font-size:12.5px;line-height:18px;color:var(--texto-tenue);white-space:nowrap}
+ .marca-anio .r i{flex:1;height:1px;background:var(--borde)}
+ .hito{display:flex;gap:14px;align-items:stretch}
+ .hito .f{flex:0 0 96px;text-align:right;font-size:12.5px;line-height:18px;
+  color:var(--texto-tenue);padding-top:14px}
+ .hito .l{flex:0 0 auto;display:flex;flex-direction:column;align-items:center}
+ .hito .l i{width:1px;background:var(--borde)}
+ .hito .l i.sup{flex:0 0 14px}
+ .hito .l i.inf{flex:1}
+ .hito .l b{width:10px;height:10px;border-radius:50%;flex:0 0 auto}
+ .hito .c{flex:1;padding:8px 0 16px;min-width:0}
+ .hito .c .l1{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+ .hito .c a{font-size:15px;line-height:22px;font-weight:600;color:var(--titular);
+  text-decoration:none}
+ .hito .c a:hover{text-decoration:underline}
+ .hito .c .rr{font-size:13px;line-height:19px;color:var(--texto-secundario);margin-top:2px;
+  max-width:70ch;text-wrap:pretty}
+
+ .pie{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;
+  border-top:3px solid var(--p300);padding-top:18px;font-size:var(--t-mini);
+  line-height:var(--t-mini-l);color:var(--texto-tenue)}
+ .pie div{max-width:70ch;text-wrap:pretty}
+
+ /* Los enlaces al mecanismo. Discretos: son la puerta de atrás, no la portada.
+    Encima del pie y bajo la misma raya, para que se lean como una sola zona. */
+ .enlaces{display:flex;flex-wrap:wrap;gap:var(--e2) var(--e4);align-items:center;
+  border-top:3px solid var(--p300);padding-top:var(--e3);margin-top:var(--e5)}
+ .enlaces + .pie{border-top:0;padding-top:var(--e3);margin-top:0}
+ .enlaces a{display:inline-flex;align-items:center;gap:6px;
+  font-size:var(--t-base);line-height:var(--t-base-l);font-weight:600;
+  color:var(--p900);text-decoration:none;border-bottom:1px solid var(--p200);
+  padding-bottom:1px}
+ .enlaces a:hover{border-bottom-color:var(--p600)}
+ .enlaces a:focus-visible{outline:2px solid var(--p600);outline-offset:3px}
+ .enlaces a span{font-weight:400;color:var(--texto-tenue)}
+
+ /* ── MÓVIL ─────────────────────────────────────────────────────────────────
+    Verificado a 360, 390 y 414 px. Sin `overflow-x:hidden`: cada regla ataca a
+    un elemento concreto que era más ancho que su contenedor. */
+ @media (max-width:640px){
+  .lat{padding-left:var(--e4);padding-right:var(--e4)}
+  .heroe .lat{padding-top:var(--e5);padding-bottom:var(--e5)}
+  .cuerpo{padding-top:var(--e5);padding-bottom:var(--e6);gap:var(--e5)}
+  /* Los controles fijos ocupaban media pantalla en el teléfono. */
+  .controles{position:static;padding:var(--e3)}
+  .barra{position:static}
+  /* Rejillas de ancho mínimo mayor que el viewport útil: se pasan a una columna. */
+  .kpis{grid-template-columns:1fr 1fr;gap:var(--e2)}
+  .capas,.glosario .rej{grid-template-columns:1fr}
+  .capa{border-right:none;border-bottom:1px solid var(--borde)}
+  .capa:last-child{border-bottom:none}
+  .kpi{padding:var(--e3)}
+  /* La columna de fecha de la cronología era fija en 96px y empujaba el resto. */
+  .hito .f,.marca-anio .a{flex:0 0 62px}
+  .marca-anio .a{font-size:var(--t-titulo);line-height:var(--t-titulo-l)}
+  .detalle .dcab,.detalle .dcuerpo,.dpie{padding-left:var(--e3);padding-right:var(--e3)}
+  .panel > .cab{padding:var(--e3)}
+  .vacio{padding:var(--e6) var(--e4)}
+  .fila{padding:var(--e2) var(--e3)}
+  /* En una columna estrecha, truncar con puntos suspensivos esconde el dato.
+     Mejor que baje de línea: la información es la misma que en escritorio. */
+  .fila .tt,.fila .ar{white-space:normal;overflow:visible;text-overflow:clip}
+  .fila{align-items:flex-start;flex-direction:column;gap:var(--e2)}
+  .fila .der{width:100%;justify-content:space-between}
+  /* Un <select> nativo reclama el ancho de su opción más larga: «Agrupar por
+     área de producto» puede pedir más que el viewport. Se le pone techo y se
+     recorta el texto dentro, que es del control y no del dato. */
+  .sel,.selp,.busca,.filtros-docs select{max-width:100%;
+   text-overflow:ellipsis}
+  .controles .f1,.controles .f2{gap:var(--e2)}
+  /* El grupo de tiempo lleva dos selectores y dos fechas: en una línea no cabe. */
+  .tiempo{width:100%;flex-wrap:wrap}
+  .tiempo .div{display:none}
+  .f3{align-items:flex-start;flex-direction:column;gap:var(--e2)}
+
+  /* ── ANULACIONES QUE DEBEN GANAR ────────────────────────────────────────────
+     Van al final de la hoja a propósito: escritas antes, las reglas base con la
+     misma especificidad las pisaban. Es lo que dejaba el detalle invisible en el
+     teléfono. */
+  .tablero.condetalle{grid-template-columns:1fr}
+  .tablero.condetalle .lista{display:none}
+  #detalle{position:static;top:auto}
+  .detalle{max-height:none;overflow:visible;box-shadow:var(--sombra)}
+  .volver{display:inline-flex}
+  /* En móvil manda el botón de volver, que es una vista propia con vuelta atrás.
+     El de cerrar sobra, y con él el hueco que le reservaba la cabecera. */
+  .cerrar{display:none}
+  .detalle .dcab{position:static;backdrop-filter:none}
+ }
+
+ /* ── CAJÓN DE FILTROS ──────────────────────────────────────────────────────
+    En escritorio el resumen se oculta y el cajón lo abre el JS: los filtros se
+    ven exactamente como antes. En móvil se contrae a un solo control. */
+ .resumen-filtros{display:none}
+ @media (max-width:640px){
+  .resumen-filtros{display:flex;align-items:center;gap:var(--e2);cursor:pointer;
+   list-style:none;padding:var(--e2) var(--e3);border:1px solid var(--borde-fuerte);
+   border-radius:var(--radio);background:var(--superficie);
+   font-size:var(--t-base);font-weight:600;color:var(--texto-secundario)}
+  .resumen-filtros::-webkit-details-marker{display:none}
+  .resumen-filtros .etiq{margin-right:auto}
+  .resumen-filtros .n{background:var(--p600);color:#fff;border-radius:var(--radio-pastilla);
+   min-width:20px;text-align:center;padding:0 6px;font-size:var(--t-mini);
+   line-height:20px;font-weight:700}
+  #cajon-filtros[open] .resumen-filtros{margin-bottom:var(--e3)}
+  #cajon-filtros[open] .resumen-filtros .pico{transform:rotate(180deg)}
+  .resumen-filtros .pico{color:var(--texto-tenue);transition:transform .15s}
+  /* Dentro del cajón, controles nativos a lo ancho: el teléfono muestra sus
+     propios selectores de lista y de fecha. */
+  #cajon-filtros .sel,#cajon-filtros .selp,#cajon-filtros .busca{width:100%}
+  /* `.busca` trae `flex:1 1 260px`, escrito para una fila: ahí 260px es base de
+     ANCHO. La regla de abajo vuelca `.f1` a columna, y con el eje volteado esos
+     260px pasan a ser base de ALTO: el campo de búsqueda salía como una caja de
+     260 px de alto, sin enfocar, mientras los <select> de al lado —que no llevan
+     `flex`— se veían normales. Voltear la dirección de un contenedor reinterpreta
+     la base de flex de todos sus hijos; hay que reponerla. */
+  #cajon-filtros .busca{flex:0 0 auto}
+  #cajon-filtros .f1,#cajon-filtros .f2{flex-direction:column;align-items:stretch}
+  #cajon-filtros .tiempo{align-items:stretch;flex-direction:column}
+  #cajon-filtros .tiempo select{width:100%;border:1px solid var(--borde-fuerte);
+   border-radius:var(--radio-chico);padding:var(--e2)}
+  #chips-sev{display:flex !important;flex-wrap:wrap;gap:var(--e2)}
+ }
+ .aviso{background:var(--superficie);border:1px solid var(--borde);
+  border-left:4px solid var(--sev-mayor);border-radius:var(--radio);
+  padding:12px 16px;font-size:13px;line-height:19px}
+ .aviso.alerta{border-left-color:var(--cita-no_se_pudo_comprobar)}
+ table{width:100%;border-collapse:collapse;font-size:13px}
+ td,th{text-align:left;padding:8px;border-bottom:1px solid var(--borde)}
+ th{color:var(--texto-tenue);font-weight:600}
+ .env{overflow-x:auto}
+</style>
+</head>
+<body>
+<div class="banda-marca"></div>
+<header class="barra">
+ <div class="lat">
+  <div class="marca">
+   <span class="glifo" aria-hidden="true"><svg viewBox="0 0 40 40" fill="none"
+     xmlns="http://www.w3.org/2000/svg">
+     <!-- Ícono de aplicación: círculo teal relleno con el abanico blanco encima.
+          El círculo usa los teales de marca; el abanico son los cuatro trazos
+          del isotipo del sitio, escalados y centrados sobre él. -->
+     <defs><linearGradient id="iso-fondo" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="var(--acento-teal)"/>
+      <stop offset="1" stop-color="var(--p700)"/></linearGradient></defs>
+     <circle cx="20" cy="20" r="20" fill="url(#iso-fondo)"/>
+     <g fill="#FFFFFF" transform="translate(9.5,12.4) scale(0.617)"><path
+     d="M26.5336 22.0119C25.6566 22.4559 18.0663 23.9826 12.2951 22.4234C7.98569 21.254 2.23616 17.9082 0.319646 16.7496C-0.0268413 16.5331 -0.102635 16.0675 0.146403 15.7535L7.23857 6.76646C7.54175 6.38749 8.13728 6.41997 8.38631 6.83143C9.53406 8.65049 12.4467 12.9708 15.9008 15.9051C20.5459 19.8464 24.3031 20.9508 26.5553 21.2107C26.8368 21.2432 27.3998 21.5572 26.5336 22.0119Z"/><path
+     d="M24.4874 18.8827C23.7728 18.7202 18.6404 15.9917 16.0418 12.3319C14.1686 9.70073 12.4903 5.25053 11.8731 3.51809C11.7323 3.12829 11.9706 2.72767 12.3712 2.64104L20.3296 0.908606C20.806 0.800329 21.2391 1.21178 21.185 1.68821C20.9792 3.42064 20.6652 7.09124 21.2499 10.2746C22.062 14.7681 23.7078 17.2044 24.8881 18.4279C25.0396 18.5795 25.2129 19.0342 24.4983 18.8827H24.4874Z"/><path
+     d="M25.2993 16.8037C24.9745 16.4139 23.2962 12.7758 23.3937 9.67906C23.4586 7.57847 24.2924 4.66581 24.7146 3.32317C24.8337 2.93337 25.2669 2.7493 25.6458 2.92255L30.2368 5.06644C30.6807 5.27217 30.7782 5.85686 30.4425 6.21418C29.5546 7.15619 28.0388 8.89946 27.1076 10.7293C25.6783 13.5337 25.5592 15.5585 25.7 16.7279C25.7216 16.8687 25.6242 17.1935 25.2993 16.8145V16.8037Z"/><path
+     d="M27.2049 15.6561C27.194 15.3638 27.7138 13.1008 28.8507 11.7148C29.587 10.8269 30.8971 9.84162 31.6009 9.34354C31.85 9.1703 32.1965 9.25692 32.3372 9.52761L33.5499 11.8664C33.7123 12.1912 33.5066 12.5919 33.1493 12.646C32.3914 12.7759 31.1895 13.0358 30.1933 13.5122C28.5367 14.2918 27.7787 15.1797 27.4323 15.7644C27.3889 15.8402 27.2265 15.9485 27.2157 15.6561H27.2049Z"/></g></svg></span>
+   <div>
+    <div class="n">Siempre al D&iacute;a</div>
+    <div class="s">Radar regulatorio &middot; facturaci&oacute;n electr&oacute;nica DIAN</div>
+   </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+   <div class="pildora"><span class="late"></span><span id="tira">cargando&hellip;</span></div>
+   <span class="distintivo">Prototipo &middot; reto t&eacute;cnico</span>
+  </div>
+ </div>
+</header>
+
+<section class="heroe">
+ <div class="lat">
+  <div class="hfila">
+   <div>
+    <div class="ceja">Vigilancia normativa autom&aacute;tica</div>
+    <h1 id="titular">&nbsp;</h1>
+    <p class="entrada">El sistema captura las fuentes oficiales cada ma&ntilde;ana, compara contra
+     la captura anterior e interpreta el impacto en producto. Cada afirmaci&oacute;n queda
+     anclada a una cita verificada contra el documento del d&iacute;a.</p>
+   </div>
+   <div class="origen" id="origen">
+    <span class="pt"></span>
+    <div><div class="a" id="origen-a">&nbsp;</div><div class="b" id="origen-b">&nbsp;</div></div>
+   </div>
+  </div>
+  <div class="kpis" id="kpis"></div>
+ </div>
+</section>
+
+<div class="lat cuerpo">
+ <section class="panel">
+  <div class="cab">
+   <div style="display:flex;align-items:center;gap:10px">
+    <span class="late"></span><h2>Estado del sistema</h2>
+   </div>
+   <div class="der">Barrido programado 06:30 &middot; interpretaci&oacute;n 07:00
+    (hora de Colombia) &middot; aviso por correo si hay bloqueante o mayor</div>
+  </div>
+  <div class="capas" id="capas"></div>
+  <!-- La recurrencia, dicha con lo que se puede comprobar sin credenciales.
+       El enlace de «Ejecuciones» del pie da 404 sin sesión —el repositorio es
+       privado y la etiqueta lo advierte—, así que esta línea no se apoya en él:
+       apunta al archivo del cron, que sí está a la vista en el espejo público.
+       Lo que NO dice, a propósito: que haya un historial de barridos en la
+       página. No lo hay, y afirmarlo aquí sería la clase de exageración que
+       este tablero existe para no cometer (ver CONTEXTO §11). -->
+  <p class="cadencia">Barrido diario a las 06:30 (hora de Colombia). El cron est&aacute;
+   declarado en el <a href="https://github.com/arojas1913-design/radar-regulatorio-alegra-publico/blob/main/docs/workflow-radar-regulatorio.yml"
+   target="_blank" rel="noopener">archivo del workflow</a>, enlazado abajo; el historial
+   de ejecuciones vive en el repositorio privado.</p>
+ </section>
+
+ <div class="pestanas" role="tablist">
+  <button role="tab" id="tab-cambios" aria-selected="true">Cambios detectados</button>
+  <button role="tab" id="tab-crono" aria-selected="false">Cronolog&iacute;a</button>
+  <button role="tab" id="tab-docs" aria-selected="false">Documentos vigilados</button>
+ </div>
+
+ <section class="controles">
+  <!-- En móvil todo esto se contrae a un solo control «Filtros (N)». En
+       escritorio el <details> se abre por JS y su resumen se oculta, así que se
+       comporta exactamente igual que antes. -->
+  <details id="cajon-filtros">
+  <summary class="resumen-filtros">
+   <span class="etiq">Filtros</span>
+   <span class="n" id="filtros-activos" hidden>0</span>
+   <span class="pico">▾</span>
+  </summary>
+  <div class="f1">
+   <div class="busca"><span>&#8981;</span>
+    <input type="search" id="q" placeholder="Buscar en documento, art&iacute;culo, &aacute;rea, qu&eacute; se rompe o cita literal">
+   </div>
+   <select class="sel" id="agrupar">
+    <option value="severidad">Agrupar por severidad</option>
+    <option value="documento">Agrupar por documento</option>
+    <option value="area">Agrupar por &aacute;rea de producto</option>
+    <option value="fecha">Agrupar por fecha de detecci&oacute;n</option>
+    <option value="ninguna">Sin agrupar</option>
+   </select>
+   <select class="sel" id="orden">
+    <option value="severidad">Orden: severidad</option>
+    <option value="detectado">Orden: detecci&oacute;n reciente</option>
+    <option value="dias">Orden: d&iacute;as hasta obligatoriedad</option>
+   </select>
+  </div>
+  <div class="f2">
+   <span id="chips-sev" style="display:contents"></span>
+   <select class="selp" id="fgap">
+    <option value="">Brecha: todas</option>
+    <option value="cubierto">Cubierto</option>
+    <option value="parcial">Parcial</option>
+    <option value="no_cubierto">No cubierto</option>
+    <option value="sin_evidencia">Sin evidencia</option>
+   </select>
+   <select class="selp" id="fdoc"></select>
+   <select class="selp" id="fcapa">
+    <option value="">Capa: todas</option>
+    <option value="A">Capa A &middot; publicaciones</option>
+    <option value="B">Capa B &middot; articulado</option>
+    <option value="C">Capa C &middot; producto</option>
+   </select>
+   <div class="tiempo" id="tiempo">
+    <span class="r">Tiempo</span>
+    <select class="campo" id="campoFecha" title="Qu&eacute; fecha se usa para filtrar">
+     <option value="vigencia">Fecha de vigencia</option>
+     <option value="detectado">Fecha de detecci&oacute;n</option>
+     <option value="documento">Fecha de la norma base</option>
+    </select>
+    <span class="div"></span>
+    <select id="rango" title="Periodo">
+     <option value="">Todo el hist&oacute;rico</option>
+     <option value="30">&Uacute;ltimos 30 d&iacute;as</option>
+     <option value="90">&Uacute;ltimos 90 d&iacute;as</option>
+     <option value="365">&Uacute;ltimo a&ntilde;o</option>
+     <option value="libre">Rango a medida</option>
+    </select>
+    <span id="libre" hidden style="display:flex;align-items:center;gap:5px;padding-left:2px">
+     <input type="date" id="desde" aria-label="Desde">
+     <span style="font-size:12.5px;color:var(--texto-tenue)">&ndash;</span>
+     <input type="date" id="hasta" aria-label="Hasta">
+    </span>
+   </div>
+  </div>
+  </details>
+  <!-- Fuera del cajón: se ve sin abrir, para saber qué está aplicado. -->
+  <div class="f3">
+   <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+    <span class="contador" id="contador"></span>
+    <button class="bt" id="limpiar" hidden>Quitar filtros</button>
+    <a class="ir-glosario" href="#glosario-bloque">&iquest;Qu&eacute; significa cada t&eacute;rmino?</a>
+   </div>
+   <button class="bt" id="copiar-vista">Copiar enlace de esta vista</button>
+  </div>
+ </section>
+
+ <div id="aviso"></div>
+
+ <div id="vista-cambios">
+  <span id="tope-lista"></span>
+  <div class="tablero" id="tablero">
+   <div class="lista" id="lista"></div>
+   <div id="detalle"></div>
+  </div>
+ </div>
+
+ <section class="crono" id="vista-crono" hidden>
+  <h2>Qu&eacute; ha pasado, en orden</h2>
+  <p class="cp">Hist&oacute;rico completo de detecciones, del m&aacute;s reciente al m&aacute;s
+   antiguo. Responde &laquo;&iquest;qu&eacute; ha pasado?&raquo;, no
+   &laquo;&iquest;qu&eacute; tengo que hacer hoy?&raquo;.</p>
+  <div id="crono-cuerpo"></div>
+ </section>
+
+ <section class="crono" id="vista-docs" hidden>
+  <h2>Documentos vigilados en el listado de la DIAN</h2>
+  <p class="cp">Todo lo que el radar mira cada ma&ntilde;ana. Es consulta, no
+   trabajo del d&iacute;a: por eso vive aqu&iacute; y no en la primera pantalla.</p>
+  <div class="filtros-docs">
+   <select class="sel" id="docs-tipo"></select>
+   <select class="sel" id="docs-anio"></select>
+   <select class="sel" id="docs-orden">
+    <option value="fecha-desc">M&aacute;s reciente primero</option>
+    <option value="fecha-asc">M&aacute;s antiguo primero</option>
+    <option value="titulo">Por t&iacute;tulo</option>
+    <option value="tipo">Por tipo</option>
+   </select>
+   <span class="cuenta" id="docs-cuenta"></span>
+  </div>
+  <div class="env"><table id="pubs"><thead><tr><th>Fecha</th><th>Documento</th><th>Tipo</th></tr></thead>
+   <tbody></tbody></table></div>
+ </section>
+
+ <!-- El glosario es consulta, no lectura obligatoria: vive abajo, cerca del pie.
+      Se llega por el enlace del bloque de filtros y se vuelve por el suyo. -->
+ <section class="glosario" id="glosario-bloque">
+  <div class="tit">
+   <span>Qu&eacute; significa cada t&eacute;rmino</span>
+   <a href="#tope-lista" class="volver-glosario">&uarr; Volver a los cambios</a>
+  </div>
+  <div class="rej" id="glosario"></div>
+ </section>
+
+ <!-- El enunciado pide el link «y con acceso a tu flujo, agente, automatizaci&oacute;n
+      o script». Sin estos cuatro enlaces, quien abre la p&aacute;gina ve el resultado y
+      no tiene por d&oacute;nde llegar al mecanismo que lo produjo. -->
+ <nav class="enlaces" aria-label="C&oacute;mo llegar al mecanismo">
+  <a href="https://github.com/arojas1913-design/radar-regulatorio-alegra-publico"
+     target="_blank" rel="noopener">C&oacute;digo</a>
+  <a href="https://github.com/arojas1913-design/radar-regulatorio-alegra-publico/blob/main/docs/workflow-radar-regulatorio.yml"
+     target="_blank" rel="noopener">Cron <span>(el workflow, p&uacute;blico)</span></a>
+  <a href="https://github.com/arojas1913-design/radar-regulatorio-alegra/actions"
+     target="_blank" rel="noopener">Ejecuciones <span>(repo privado)</span></a>
+  <a href="https://github.com/arojas1913-design/radar-regulatorio-alegra-publico/blob/main/docs/RIA-RRD-GapAnalysis_Resolucion-202-2025_IvanRojas.pdf"
+     target="_blank" rel="noopener">Documento <span>(RIA &middot; RRD &middot; Gap)</span></a>
+  <a href="datos.json" target="_blank" rel="noopener">Datos <span>(JSON)</span></a>
+ </nav>
+
+ <footer class="pie">
+  <div id="pie-texto"></div>
+  <span class="distintivo">Solo lectura &middot; esta pantalla no escribe nada</span>
+ </footer>
+</div>
+
+<script>
+const RESPALDO = {"generado": "2026-08-08T06:58:28-05:00", "barrido": "2026-08-08T06:56:48-05:00", "barrido_texto": "2026-08-08 06:56 (hora de Colombia)", "origen": "repositorio (docs/datos.json)", "deteccion_linea_base": true, "resumen": {"cambios_publicados": 4, "cambios_retenidos": 0, "retenidos_cita_no_verifica": 0, "retenidos_no_comprobables": 0, "documentos_vigilados": 38, "paginas_producto": 25, "por_severidad": {"bloqueante": 0, "mayor": 1, "menor": 1, "requiere_revision_humana": 2}}, "capas": [{"clave": "A", "nombre": "Publicaciones", "pregunta": "¿Salió algo nuevo en el listado de normatividad de la DIAN?", "fuentes": "3 de 3 fuentes respondieron", "cadencia": "diario", "barrido": "2026-08-08 06:56", "estado": "Al día", "incidencia": null}, {"clave": "B", "nombre": "Articulado", "pregunta": "¿Qué regla concreta cambió dentro de las resoluciones?", "fuentes": "2 documentos · 72 artículos troceados", "cadencia": "diario", "barrido": "2026-08-08 06:56", "estado": "Al día", "incidencia": null}, {"clave": "C", "nombre": "Producto", "pregunta": "¿Qué declara soportar el producto hoy, según su documentación pública?", "fuentes": "25 páginas únicas por contenido", "cadencia": "diario", "barrido": "2026-08-08 06:58", "estado": "Al día", "incidencia": null}], "cambios": [{"documento": "Resolución 000165 de 2023", "documento_fecha": "2023-11-01", "modificado_por": "Resolución 000202 de 2025", "articulo": "Artículo 20", "tipo": "paragrafo_adicionado", "capa": "B", "severidad": "requiere_revision_humana", "area_producto": "emisión — documento equivalente electrónico de servicios públicos domiciliarios", "que_se_rompe": null, "accion_requerida": "Falta el lado del producto: en las 25 páginas capturadas del help center de Colombia no hay una sola mención al documento equivalente de servicios públicos domiciliarios ni a empresas prestadoras de esos servicios. Sin evidencia de que Alegra emita ese documento, afirmar qué se rompe sería inventar el producto. Un analista con acceso interno debe responder una sola pregunta: ¿Alegra emite el DEE de servicios públicos domiciliarios? Si la respuesta es no, esto es informativo; si es sí, hay que revisar si el catálogo de bienes y servicios facturables por ese documento está restringido a los inherentes al servicio público.", "fecha_vigencia": "2025-03-31", "dias_hasta_obligatoriedad": 0, "gap_estado": "sin_evidencia", "gap_nota": "No hay evidencia pública de que Alegra soporte el documento equivalente de servicios públicos domiciliarios. Esto NO significa que no lo soporte: significa que su help center no lo documenta. Son afirmaciones distintas.", "cita_literal": "Las empresas que presten servicios públicos domiciliarios que expidan el Documento Equivalente Electrónico de servicios públicos domiciliarios, solo podrán hacer uso de este documento en la venta de bienes y/o prestación de servicios originados en la prestación del servicio público o los que le sean inherentes a estos, salvo que cuenten con la autorización expresa del usuario y/o suscriptor", "url_origen": "https://normograma.dian.gov.co/dian/compilacion/docs/resolucion_dian_0165_2023.htm", "url_modificatoria": "https://normograma.dian.gov.co/dian/compilacion/docs/resolucion_dian_0202_2025.htm", "estado_cita": "verificada", "verificacion": "cita hallada literalmente en el snapshot", "confirmado_por": ["declaracion_en_co_dian_res_202_2025", "marca_de_compilacion_en_co_dian_res_165_2023"], "coincidencia_vias": 0.98, "texto_antes": "ARTÍCULO 20. REQUISITOS ESPECÍFICOS DEL DOCUMENTO EQUIVALENTE ELECTRÓNICO. <Artículo compilado como artículo 1.5.1.3.2.5 en la Resolución 227 de 2025> Además de los requisitos comunes contemplados en el artículo 19 de la presente resolución, el documento equivalente electrónico deberá cumplir con requisitos específicos que se indican a continuación:\n1. Tratándose del documento equivalente electrónico tiquete de máquina registradora con sistema P.O.S., deberá indicar cantidad, unidad de medida, y descripción específica y códigos que permitan la identificación de los bienes vendidos y/o servicios prestados, utilizando códigos que permitan la identificación y relación de los mismos.\nAdicionalmente los obligados a facturar que opten por utilizar el documento equivalente electrónico tiquete de máquina registradora con sistemas P.O.S., previsto en el presente numeral, deberán utilizar desarrollos tecnológicos que garanticen:\n1.1. Permitir la programación, control y ejecución de las funciones inherentes al punto de venta.\n1.2. Identificar los bienes o servicios, con indicación del departamento al cual corresponden y la tarifa del impuesto sobre las ventas e impuesto nacional al consumo asociadas a cada bien o servicio.\n1.3. La agrupación de los bienes y/o servicios puede hacerse en forma diferente a la de departamentos, pero en todo caso, la forma de agrupación que haya escogido el sujeto obligado, deberá poder identificarse en el servidor del punto de venta o en la terminal de venta, según el caso.\n1.4. El artículo exhibido al público deberá encontrarse identificado mediante código de barras u otro tipo de identificación interna.\n2. Tratándose de la boleta de ingreso a cine, el documento equivalente electrónico deberá indicar el número o nombre de la sala de exhibición y número de sillas totales que la componen, la ubicación indicando la dirección en la que se encuentra la sala de exhibición y nombre de la función o película que será presentada.\n3. Tratándose del tiquete de transporte de pasajeros, deberá indicar la descripción específica del servicio prestado, indicando el modo de transporte o tipo de operación, el número de identificación del vehículo y el medio de transporte, empresa de transporte a la que se encuentra afiliado, lugar de origen y lugar de destino.\n4. Tratándose del extracto, deberá indicar la descripción específica del servicio prestado.\n5. Tratándose del tiquete o billete de transporte aéreo de pasajeros, deberá indicar la descripción específica o genérica del bien y/o prestación del servicio.\n6. Tratándose del documento en juegos localizados el mismo deberá indicar los siguientes requisitos:\n6.1. El número de instrumentos de juego y discriminación e identificación de cada una de las máquinas o juego;\n6.2. Dirección en que se encuentra el establecimiento; en caso de ser virtual suministrar la dirección de internet y la dirección IP;\n6.3. El valor de la base o depósito en dinero y el valor de lo pagado en cada una de las máquinas o juego, cuando aplique;\n6.4. El valor diario por cada instrumento de juego y la discriminación e identificación de cada una de las máquinas o juego;\n6.5. El valor del Impuesto sobre las Ventas (IVA). En el último documento resumen en juegos localizados - relación diaria de control de ventas del periodo que se declara.\n6.6. Detallar el nombre e identificación del serial de la máquina utilizada en los juegos localizados tales como: máquinas tragamonedas, bingos, video-bingos, esferódromos y los operados en casino y similares y detallar el valor de los impuestos del orden nacional a que haya lugar en la operación del juego.\n7. Tratándose de la boleta, fracción o formulario en juegos de suerte y azar diferentes de los juegos localizados, el mismo deberá indicar con los siguientes requisitos:\n7.1. Indicar si se trata de boleta, fracción o formulario;\n7.2. Tener la fecha que debe corresponder al día en que se realizaron las operaciones;\n7.3. Contener nombre o razón social y Número de Identificación Tributaria (NIT) del sujeto obligado;\n7.4. Contener el número y valor de la boleta, fracción, formulario, cartones, billetes o instrumento que da derecho a participar en el juego;\n8. Tratándose del documento expedido para el cobro de peajes, deberá indicar la descripción específica o genérica de bienes o servicios y la categoría a la cual pertenece el vehículo por el cual se realiza el pago de la tarifa de peaje.\n9. Tratándose del comprobante de liquidación de operaciones expedido por la Bolsa de Valores, deberá indicar la descripción específica o genérica de bienes o servicios y el valor de las comisiones a favor de la Bolsa y de otras remuneraciones que obtengan estas entidades.\n10. Tratándose del documento de operaciones de la bolsa agropecuaria y de otros commodities, deberá indicar el valor de las comisiones a favor de la bolsa y de otras remuneraciones que obtengan estas entidades.\n11. Tratándose del documento expedido para los servicios públicos domiciliarios, deberá indicar la descripción específica o genérica de bienes o servicios, los descuentos, financiación, subsidios, otros cargos e ingresos asociados.\n12. Tratándose de la boleta de ingreso a espectáculos públicos de las artes escénicas, y otros espectáculos públicos, deberá indicar:\n12.1. La descripción específica o genérica de bienes o servicios;\n12.2. El código único del evento - Código PULEP;\n12.3. El nombre del evento, sala, escenario, puesto y/o localidad asignada e indicar la palabra \"cortesía\", cuando aplique;\n12.4. Incorporar el número y valor de la boleta o instrumento que da derecho a participar en el espectáculo público.\nPARÁGRAFO. Los sujetos obligados a reportar a otras entidades estatales las operaciones de venta de juegos de suerte y azar en los que se expida documento, boleta, fracción, formulario, cartones, billetes o instrumento que da derecho a participar en el juego, juegos localizados y en los espectáculos públicos, no se encuentran en la obligación de implementar el documento equivalente electrónico de que trata el artículo 19 y los numerales 6, 7 y 12 del artículo 20 de esta resolución. En este caso, deberán expedir los documentos equivalentes establecidos en los numerales 6, 7 y 12 del artículo 1.6.1.4.6. del Decreto número 1625 de 2016 con los requisitos previstos en el artículo 1.6.1.4.14. del mismo decreto.\nCuando no se cumpla lo previsto en el inciso anterior, deberán implementar el documento equivalente electrónico en los términos establecidos en la presente resolución.", "texto_despues": "ARTÍCULO 20. REQUISITOS ESPECÍFICOS DEL DOCUMENTO EQUIVALENTE ELECTRÓNICO. <Artículo compilado como artículo 1.5.1.3.2.5 en la Resolución 227 de 2025> Además de los requisitos comunes contemplados en el artículo 19 de la presente resolución, el documento equivalente electrónico deberá cumplir con requisitos específicos que se indican a continuación:\n1. Tratándose del documento equivalente electrónico tiquete de máquina registradora con sistema P.O.S., deberá indicar cantidad, unidad de medida, y descripción específica y códigos que permitan la identificación de los bienes vendidos y/o servicios prestados, utilizando códigos que permitan la identificación y relación de los mismos.\nAdicionalmente los obligados a facturar que opten por utilizar el documento equivalente electrónico tiquete de máquina registradora con sistemas P.O.S., previsto en el presente numeral, deberán utilizar desarrollos tecnológicos que garanticen:\n1.1. Permitir la programación, control y ejecución de las funciones inherentes al punto de venta.\n1.2. Identificar los bienes o servicios, con indicación del departamento al cual corresponden y la tarifa del impuesto sobre las ventas e impuesto nacional al consumo asociadas a cada bien o servicio.\n1.3. La agrupación de los bienes y/o servicios puede hacerse en forma diferente a la de departamentos, pero en todo caso, la forma de agrupación que haya escogido el sujeto obligado, deberá poder identificarse en el servidor del punto de venta o en la terminal de venta, según el caso.\n1.4. El artículo exhibido al público deberá encontrarse identificado mediante código de barras u otro tipo de identificación interna.\n2. Tratándose de la boleta de ingreso a cine, el documento equivalente electrónico deberá indicar el número o nombre de la sala de exhibición y número de sillas totales que la componen, la ubicación indicando la dirección en la que se encuentra la sala de exhibición y nombre de la función o película que será presentada.\n3. Tratándose del tiquete de transporte de pasajeros, deberá indicar la descripción específica del servicio prestado, indicando el modo de transporte o tipo de operación, el número de identificación del vehículo y el medio de transporte, empresa de transporte a la que se encuentra afiliado, lugar de origen y lugar de destino.\n4. Tratándose del extracto, deberá indicar la descripción específica del servicio prestado.\n5. Tratándose del tiquete o billete de transporte aéreo de pasajeros, deberá indicar la descripción específica o genérica del bien y/o prestación del servicio.\n6. Tratándose del documento en juegos localizados el mismo deberá indicar los siguientes requisitos:\n6.1. El número de instrumentos de juego y discriminación e identificación de cada una de las máquinas o juego;\n6.2. Dirección en que se encuentra el establecimiento; en caso de ser virtual suministrar la dirección de internet y la dirección IP;\n6.3. El valor de la base o depósito en dinero y el valor de lo pagado en cada una de las máquinas o juego, cuando aplique;\n6.4. El valor diario por cada instrumento de juego y la discriminación e identificación de cada una de las máquinas o juego;\n6.5. El valor del Impuesto sobre las Ventas (IVA). En el último documento resumen en juegos localizados - relación diaria de control de ventas del periodo que se declara.\n6.6. Detallar el nombre e identificación del serial de la máquina utilizada en los juegos localizados tales como: máquinas tragamonedas, bingos, video-bingos, esferódromos y los operados en casino y similares y detallar el valor de los impuestos del orden nacional a que haya lugar en la operación del juego.\n7. Tratándose de la boleta, fracción o formulario en juegos de suerte y azar diferentes de los juegos localizados, el mismo deberá indicar con los siguientes requisitos:\n7.1. Indicar si se trata de boleta, fracción o formulario;\n7.2. Tener la fecha que debe corresponder al día en que se realizaron las operaciones;\n7.3. Contener nombre o razón social y Número de Identificación Tributaria (NIT) del sujeto obligado;\n7.4. Contener el número y valor de la boleta, fracción, formulario, cartones, billetes o instrumento que da derecho a participar en el juego;\n8. Tratándose del documento expedido para el cobro de peajes, deberá indicar la descripción específica o genérica de bienes o servicios y la categoría a la cual pertenece el vehículo por el cual se realiza el pago de la tarifa de peaje.\n9. Tratándose del comprobante de liquidación de operaciones expedido por la Bolsa de Valores, deberá indicar la descripción específica o genérica de bienes o servicios y el valor de las comisiones a favor de la Bolsa y de otras remuneraciones que obtengan estas entidades.\n10. Tratándose del documento de operaciones de la bolsa agropecuaria y de otros commodities, deberá indicar el valor de las comisiones a favor de la bolsa y de otras remuneraciones que obtengan estas entidades.\n11. Tratándose del documento expedido para los servicios públicos domiciliarios, deberá indicar la descripción específica o genérica de bienes o servicios, los descuentos, financiación, subsidios, otros cargos e ingresos asociados.\n12. Tratándose de la boleta de ingreso a espectáculos públicos de las artes escénicas, y otros espectáculos públicos, deberá indicar:\n12.1. La descripción específica o genérica de bienes o servicios;\n12.2. El código único del evento - Código PULEP;\n12.3. El nombre del evento, sala, escenario, puesto y/o localidad asignada e indicar la palabra \"cortesía\", cuando aplique;\n12.4. Incorporar el número y valor de la boleta o instrumento que da derecho a participar en el espectáculo público.\nPARÁGRAFO. Los sujetos obligados a reportar a otras entidades estatales las operaciones de venta de juegos de suerte y azar en los que se expida documento, boleta, fracción, formulario, cartones, billetes o instrumento que da derecho a participar en el juego, juegos localizados y en los espectáculos públicos, no se encuentran en la obligación de implementar el documento equivalente electrónico de que trata el artículo 19 y los numerales 6, 7 y 12 del artículo 20 de esta resolución. En este caso, deberán expedir los documentos equivalentes establecidos en los numerales 6, 7 y 12 del artículo 1.6.1.4.6. del Decreto número 1625 de 2016 con los requisitos previstos en el artículo 1.6.1.4.14. del mismo decreto.\nCuando no se cumpla lo previsto en el inciso anterior, deberán implementar el documento equivalente electrónico en los términos establecidos en la presente resolución.\nPARÁGRAFO 2o. <Parágrafo adicionado por el artículo 1 de la Resolución 202 de 2025. El nuevo texto es el siguiente:> Las empresas que presten servicios públicos domiciliarios que expidan el Documento Equivalente Electrónico de servicios públicos domiciliarios, solo podrán hacer uso de este documento en la venta de bienes y/o prestación de servicios originados en la prestación del servicio público o los que le sean inherentes a estos, salvo que cuenten con la autorización expresa del usuario y/o suscriptor, y la regulación especial vigente así se lo permita.", "evidencia_usada": [], "detectado_en": "2026-08-08", "dias_publicacion_a_deteccion": 495, "arranque_en_frio": true}, {"documento": "Resolución 000165 de 2023", "documento_fecha": "2023-11-01", "modificado_por": "Resolución 000202 de 2025", "articulo": "Artículo 29", "tipo": "paragrafo_adicionado", "capa": "B", "severidad": "requiere_revision_humana", "area_producto": "transmisión y validación — documento equivalente de servicios públicos domiciliarios facturado en sitio", "que_se_rompe": null, "accion_requerida": "Mismo vacío que el artículo 20, y por la misma razón: el cambio regula a empresas de servicios públicos domiciliarios que facturan en sitio, y no hay evidencia pública de que Alegra atienda ese caso. Si lo atendiera, lo que habría que construir es concreto y está en el texto: una ventana de transmisión diferida de hasta 48 horas contadas desde que el facturador recibe la lectura del consumo, más la emisión de un documento físico en el intervalo. Un analista debe confirmar si ese caso de uso existe en el producto antes de dimensionarlo.", "fecha_vigencia": "2025-03-31", "dias_hasta_obligatoriedad": 0, "gap_estado": "sin_evidencia", "gap_nota": "El help center documenta plazos de emisión para nómina electrónica y contingencias de facturación, pero nada sobre facturación en sitio de servicios públicos domiciliarios. Sin ese lado, el gap no se puede calcular.", "cita_literal": "contarán con un plazo de hasta 48 horas, a partir del momento que reciba la información el facturador de la lectura y/o medición del consumo del correspondiente servicio, de forma electrónica y/o en su sede, para generar y transmitir a la Unidad Administrativa Especial Dirección de Impuestos y Aduanas Nacionales (DIAN) el documento para su validación", "url_origen": "https://normograma.dian.gov.co/dian/compilacion/docs/resolucion_dian_0165_2023.htm", "url_modificatoria": "https://normograma.dian.gov.co/dian/compilacion/docs/resolucion_dian_0202_2025.htm", "estado_cita": "verificada", "verificacion": "cita hallada literalmente en el snapshot", "confirmado_por": ["declaracion_en_co_dian_res_202_2025", "marca_de_compilacion_en_co_dian_res_165_2023"], "coincidencia_vias": 1.0, "texto_antes": "ARTÍCULO 29. GENERACIÓN. <Artículo compilado como artículo 1.5.1.5.2.1 en la Resolución 227 de 2025> La generación es un procedimiento que se desarrolla una vez cumplido el procedimiento de habilitación y surja la obligación de expedir factura electrónica de venta, documento equivalente electrónico, o generar los documentos electrónicos del sistema de facturación. La generación consiste en estructurar la información que contendrán los mencionados documentos, de acuerdo con los requisitos que se establezcan para cada uno de estos.\nLo anterior para su transmisión y validación a la Unidad Administrativa Especial Dirección de Impuestos y Aduanas Nacionales (Dian) y la posterior expedición, cuando sea el caso, por parte del facturador electrónico.\nLa generación de la factura electrónica de venta, el documento equivalente electrónico, los demás documentos electrónicos, las notas débito, notas crédito, notas de ajuste y los instrumentos electrónicos que se derivan de dichos documentos, se deben elaborar cumpliendo con las condiciones, términos y mecanismos técnicos y tecnológicos, de conformidad con el \"Anexo Técnico de Factura Electrónica de Venta\", y del \"Anexo Técnico de Documento Equivalente Electrónico\".\nPARÁGRAFO. <Parágrafo adicionado por el artículo 3 de la Resolución 119 de 2024. El nuevo texto es el siguiente:> Tratándose del documento equivalente tiquete o billete de transporte aéreo de pasajeros electrónico, que requiera información de los GDS (Global Distribution System) para la generación del documento equivalente electrónico, se contará con un plazo de hasta 48 horas, a partir del momento de la generación de la reserva a través del GDS (Global Distribution System), para que el sujeto obligado a facturar realice la generación y transmisión a la Unidad Administrativa Especial Dirección de Impuestos y Aduanas Nacionales (DIAN) del documento para su validación. Los emisores deberán poner a disposición de los pasajeros, en sus páginas Web o en sus plataformas electrónicas, el documento equivalente electrónico, validado por la administración tributaria, o hacer la entrega del mismo al correo electrónico del pasajero, si este proporcionó la información.", "texto_despues": "ARTÍCULO 29. GENERACIÓN. <Artículo compilado como artículo 1.5.1.5.2.1 en la Resolución 227 de 2025> La generación es un procedimiento que se desarrolla una vez cumplido el procedimiento de habilitación y surja la obligación de expedir factura electrónica de venta, documento equivalente electrónico, o generar los documentos electrónicos del sistema de facturación. La generación consiste en estructurar la información que contendrán los mencionados documentos, de acuerdo con los requisitos que se establezcan para cada uno de estos.\nLo anterior para su transmisión y validación a la Unidad Administrativa Especial Dirección de Impuestos y Aduanas Nacionales (Dian) y la posterior expedición, cuando sea el caso, por parte del facturador electrónico.\nLa generación de la factura electrónica de venta, el documento equivalente electrónico, los demás documentos electrónicos, las notas débito, notas crédito, notas de ajuste y los instrumentos electrónicos que se derivan de dichos documentos, se deben elaborar cumpliendo con las condiciones, términos y mecanismos técnicos y tecnológicos, de conformidad con el \"Anexo Técnico de Factura Electrónica de Venta\", y del \"Anexo Técnico de Documento Equivalente Electrónico\".\nPARÁGRAFO. <Parágrafo adicionado por el artículo 3 de la Resolución 119 de 2024. El nuevo texto es el siguiente:> Tratándose del documento equivalente tiquete o billete de transporte aéreo de pasajeros electrónico, que requiera información de los GDS (Global Distribution System) para la generación del documento equivalente electrónico, se contará con un plazo de hasta 48 horas, a partir del momento de la generación de la reserva a través del GDS (Global Distribution System), para que el sujeto obligado a facturar realice la generación y transmisión a la Unidad Administrativa Especial Dirección de Impuestos y Aduanas Nacionales (DIAN) del documento para su validación. Los emisores deberán poner a disposición de los pasajeros, en sus páginas Web o en sus plataformas electrónicas, el documento equivalente electrónico, validado por la administración tributaria, o hacer la entrega del mismo al correo electrónico del pasajero, si este proporcionó la información.\nPARÁGRAFO 2o. <Parágrafo adicionado por el artículo 2 de la Resolución 202 de 2025. El nuevo texto es el siguiente:> Las empresas prestadoras de servicios públicos domiciliarios que facturen en sitio y que por razones técnicas o tecnológicas no puedan transmitir y validar el documento equivalente en ese mismo momento, contarán con un plazo de hasta 48 horas, a partir del momento que reciba la información el facturador de la lectura y/o medición del consumo del correspondiente servicio, de forma electrónica y/o en su sede, para generar y transmitir a la Unidad Administrativa Especial Dirección de Impuestos y Aduanas Nacionales (DIAN) el documento para su validación. En este evento, se deberá generar el documento equivalente de servicios públicos en físico de forma manual o autógrafa o a través de sistemas informáticos electrónicos, con los requisitos previstos en el parágrafo del artículo 67 de la presente resolución, so pena de entenderse incumplida la expedición y entrega de la factura al consumidor del servicio público domiciliario.", "evidencia_usada": [], "detectado_en": "2026-08-08", "dias_publicacion_a_deteccion": 495, "arranque_en_frio": true}, {"documento": "Resolución 000165 de 2023", "documento_fecha": "2023-11-01", "modificado_por": "Resolución 000202 de 2025", "articulo": "Artículo 69", "tipo": "articulo_adicionado", "capa": "B", "severidad": "mayor", "area_producto": "captura de datos del adquirente — formulario de contacto y constructor de la factura electrónica y del documento equivalente POS", "que_se_rompe": "El artículo convierte la captura de datos del comprador en una lista CERRADA: cuando el adquirente pide que el documento se expida a su nombre, el emisor puede solicitar únicamente nombre o razón social, tipo y número de identificación, y correo electrónico. Un formulario de venta que exija cualquier dato adicional como obligatorio deja al emisor pidiendo más de lo que la norma le permite. Además, el correo electrónico deja de ser un campo fijo y pasa a ser condicional: no es necesario, a juicio del comprador, cuando el documento se entrega como representación gráfica impresa. Y el artículo obliga a que exista un canal presencial y directo para que el comprador entregue los datos de viva voz o por escrito, de modo que un flujo que solo admita captura digital —tableta, formulario web, autoservicio— no basta por sí solo. En términos de producto: el formulario de captura del cliente en el punto de venta y el constructor del documento tienen que distinguir tres casos (comprador que no pide el documento a su nombre, comprador que lo pide, y comprador que lo pide sin correo) y el catálogo de campos obligatorios debe poder reducirse a esos tres datos.", "accion_requerida": "Producto y desarrollo del módulo de emisión y POS: revisar qué campos marca como obligatorios el formulario de captura del adquirente en el momento de la venta y recortarlos a la lista cerrada del artículo; hacer el correo electrónico opcional cuando la entrega es por representación gráfica impresa; y verificar que exista una vía para registrar los datos dictados de viva voz. Un analista regulatorio debe confirmar con el equipo si el flujo actual ya cumple: la documentación pública no alcanza para decidirlo.", "fecha_vigencia": "2025-03-31", "dias_hasta_obligatoriedad": 0, "gap_estado": "parcial", "gap_nota": "Hay evidencia de que Alegra construye la factura electrónica en POS a partir de contactos ya creados en el sistema, y de que sabe exigir campos obligatorios distintos por sector (lo hace en salud, donde pide información específica del paciente). Eso muestra que la capacidad de modelar campos obligatorios por caso existe. Lo que NO está documentado públicamente es cuáles campos exige el formulario del adquirente en el momento de la venta, ni si hay un canal presencial para dictar los datos. Por eso el estado es parcial y no cubierto.", "cita_literal": "el sujeto obligado a facturar deberá solicitar al comprador o adquirente, únicamente los datos que se describen a continuación:", "url_origen": "https://normograma.dian.gov.co/dian/compilacion/docs/resolucion_dian_0165_2023.htm", "url_modificatoria": "https://normograma.dian.gov.co/dian/compilacion/docs/resolucion_dian_0202_2025.htm", "estado_cita": "verificada", "verificacion": "cita hallada literalmente en el snapshot", "confirmado_por": ["declaracion_en_co_dian_res_202_2025", "marca_de_compilacion_en_co_dian_res_165_2023"], "coincidencia_vias": 0.977, "texto_antes": "ARTÍCULO 71 (69). PUBLICACIÓN. Publicar la presente resolución de conformidad con el artículo 65 del Código de Procedimiento Administrativo y de lo Contencioso Administrativo.", "texto_despues": "ARTÍCULO 69. DATOS EXIGIBLES AL ADQUIRIENTE O COMPRADOR PARA LA EXPEDICIÓN DE LA FACTURA ELECTRÓNICA O DOCUMENTO EQUIVALENTE ELECTRÓNICO. <Artículo compilado como artículo 1.5.1.12.3 en la Resolución 227 de 2025> <reenumera numeración original> <Artículo adicionado por el artículo 3 de la Resolución 202 de 2025. El nuevo texto es el siguiente:> Cuando el adquiriente del bien o servicio solicite que la factura electrónica de venta y/o el Documento Equivalente Electrónico tiquete de máquina registradora con sistemas P.O.S. sea expedido a su nombre, el sujeto obligado a facturar deberá solicitar al comprador o adquirente, únicamente los datos que se describen a continuación:\n1. Nombre y apellidos o razón social del comprador o adquirente\n2. Tipo y número de identificación\n3. Correo electrónico\nEl correo electrónico permitirá enviar la factura electrónica por mensaje de datos; esta información no será necesaria, a juicio del comprador, cuando la expedición de la factura de venta o el Documento Equivalente Electrónico se realice mediante impresión de representación gráfica de conformidad con lo indicado en el artículo 35 de esta resolución.\nPara la recolección de los datos personales de que tratan este artículo, el obligado a facturar podrá implementar los medios tecnológicos que permitan al comprador suministrar la información, en todo caso debe existir un canal presencial y directo para que el comprador o adquirente entregue los datos de forma verbal o escrita.\nPARÁGRAFO 1o. Cuando el adquiriente del bien o servicio no solicite que la factura electrónica de venta y/o el Documento Equivalente Electrónico tiquete de máquina registradora con sistemas P.O.S. sea expedido a su nombre, no habrá lugar a pedir los datos aquí previstos.\nPARÁGRAFO 2o. Cuando se encuentre a disposición el servicio de consulta indicado en el artículo 70 de la presente resolución, el único dato que se debe solicitar al adquiriente será el número de identificación. En caso de que el adquiriente no figure en el servicio de consulta, se solicitará los demás datos indicados en este artículo, o si el adquiriente solicita que se le envíe la factura electrónica o el documento equivalente a otro correo electrónico se solicitará este dato.", "evidencia_usada": ["https://ayuda.alegra.com/col/emision-de-facturas-electronicas-en-pos", "https://ayuda.alegra.com/col/crea-o-edita-contactos-para-facturar-en-el-sector-salud"], "detectado_en": "2026-08-08", "dias_publicacion_a_deteccion": 495, "arranque_en_frio": true}, {"documento": "Resolución 000165 de 2023", "documento_fecha": "2023-11-01", "modificado_por": "Resolución 000202 de 2025", "articulo": "Artículo 70", "tipo": "articulo_adicionado", "capa": "B", "severidad": "menor", "area_producto": "integraciones — consumo del servicio de consulta de datos del adquirente de la DIAN", "que_se_rompe": "Nada todavía, y el propio artículo lo dice: el servicio electrónico de consulta con el que la DIAN permitirá completar los datos del comprador a partir de su número de identificación solo entra en aplicación cuando la DIAN lo desarrolle y lo ponga a disposición, y mientras tanto la recolección de datos sigue siendo la del artículo 69. Lo que crea es trabajo futuro con fecha abierta: cuando la DIAN anuncie la disponibilidad, habrá que consumir ese servicio para que el punto de venta pueda pedir solo el número de identificación en vez de los tres datos, y hacerlo respetando la prohibición expresa de uso masivo o distribución de la información obtenida. No se asigna severidad mayor porque no hay fecha cierta: depende de un anuncio de la DIAN que aún no se ha producido.", "accion_requerida": "Ninguna acción obligatoria hoy. Lo que corresponde es vigilancia: el radar debe detectar el comunicado de la DIAN que anuncie la disponibilidad del servicio, porque ese anuncio es el que convierte este artículo en trabajo con fecha. Es exactamente el caso de uso de la fuente co_dian_prensa.", "fecha_vigencia": null, "dias_hasta_obligatoriedad": null, "gap_estado": "sin_evidencia", "gap_nota": "No hay evidencia pública de que Alegra consuma un servicio de consulta de la DIAN para completar datos del adquirente, lo cual es esperable: el servicio todavía no está disponible según el propio artículo. El gap se recalculará cuando la DIAN lo anuncie.", "cita_literal": "La Unidad Administrativa Especial Dirección de Impuestos y Aduanas Nacionales (DIAN), comunicará a partir de qué fecha quedará disponible el servicio de consulta electrónico para dar cumplimiento a lo previsto en este artículo. En el entretanto, la recolección de los datos será la establecida en el artículo 69 de la presente resolución.", "url_origen": "https://normograma.dian.gov.co/dian/compilacion/docs/resolucion_dian_0165_2023.htm", "url_modificatoria": "https://normograma.dian.gov.co/dian/compilacion/docs/resolucion_dian_0202_2025.htm", "estado_cita": "verificada", "verificacion": "cita hallada literalmente en el snapshot", "confirmado_por": ["declaracion_en_co_dian_res_202_2025", "marca_de_compilacion_en_co_dian_res_165_2023"], "coincidencia_vias": 1.0, "texto_antes": "ARTÍCULO 72 (70). VIGENCIA Y DEROGATORIAS. La presente resolución rige a partir de la fecha de su publicación y deroga la Resolución Dian número 000042 de 2020 sin perjuicio de lo previsto en el artículo 68 de la presente resolución.\nPublíquese y cúmplase.\nDada en Bogotá, D. C., a 1 de noviembre de 2023.\nEl Director General (e),\nJuan Felipe Bernal Uribe.", "texto_despues": "ARTÍCULO 70. FACILITACIÓN DE INFORMACIÓN PARA LA IDENTIFICACIÓN DEL COMPRADOR O ADQUIRENTE EN LA EXPEDICIÓN DE LA FACTURA DE VENTA O EL DOCUMENTO EQUIVALENTE. <Artículo compilado como artículo 1.5.1.12.4 en la Resolución 227 de 2025> <reenumera numeración original> <Artículo adicionado por el artículo 4 de la Resolución 202 de 2025. El nuevo texto es el siguiente:>\nLa Unidad Administrativa Especial Dirección de Impuestos y Aduanas Nacionales (DIAN), pondrá a disposición de los sujetos obligados a facturar un servicio electrónico de consulta, que podrá ser utilizado únicamente al momento de la venta del bien y/o la prestación del servicio, con la finalidad de facilitar el registro de los datos del comprador o adquirente al momento de generar la Factura Electrónica de Venta o Documento Equivalente Electrónico para cumplir con la obligación legal de expedir o exigir dichos documentos consagrada en los artículos 615 y 618 del Estatuto Tributario, respectivamente.\nLos facturadores electrónicos podrán utilizar esta información únicamente con el propósito de expedir la factura electrónica de venta o Documento Equivalente Electrónico, para el efecto, podrán:\n1. Acceder al servicio dispuesto por la Unidad Administrativa Especial Dirección de Impuestos y Aduanas Nacionales (DIAN), en su página web.\n2. Suministrar el tipo y número de identificación del adquirente o comprador.\n3. Completar del servicio de consulta electrónico, el nombre y apellidos o razón social y el correo electrónico del comprador.\nEn ningún caso, se podrá hacer uso masivo o distribución de la información obtenida del servicio de consulta electrónico. Para el efecto, la Unidad Administrativa Especial Dirección de Impuestos y Aduanas Nacionales-DIAN establecerá los mecanismos técnicos y procedimientos para garantizar que el servicio de facilitación de información sea seguro y controlado uno a uno.\nPARÁGRAFO. Lo dispuesto en el presente artículo, únicamente en relación con el establecimiento de mecanismos técnicos y procedimientos para el servicio de consulta entrará en aplicación cuando la Unidad Administrativa Especial Dirección de Impuestos y Aduanas Nacionales (DIAN) desarrolle y ponga a disposición de los sujetos obligados a facturar los medios tecnológicos que permitan la consulta de la información para la correcta expedición de la factura electrónica de venta, entre aplicaciones y dispositivos conectados al sistema de facturació n.\nLa Unidad Administrativa Especial Dirección de Impuestos y Aduanas Nacionales (DIAN), comunicará a partir de qué fecha quedará disponible el servicio de consulta electrónico para dar cumplimiento a lo previsto en este artículo. En el entretanto, la recolección de los datos será la establecida en el artículo 69 de la presente resolución.", "evidencia_usada": [], "detectado_en": "2026-08-08", "dias_publicacion_a_deteccion": null, "arranque_en_frio": true}], "retenidos": [], "publicaciones": [{"clave": "resolucion-202-2025", "titulo": "Resolución 000202 de 31 de marzo de 2025", "url_origen": "https://www.dian.gov.co/normatividad/Normatividad/Resoluci%C3%B3n%20000202%20de%2031-03-2025.pdf", "tipo": "resolucion", "numero": "202", "anio": 2025, "fecha_documento": "2025-03-31", "es_acto_normativo": true, "nuevo": false, "linea_base": false}, {"clave": "resolucion-189-2024", "titulo": "Resolución 000189 de 30 de octubre de 2024", "url_origen": "https://www.dian.gov.co/normatividad/Normatividad/Resoluci%C3%B3n%20000189%20de%2030-10-2024.pdf", "tipo": "resolucion", "numero": "189", "anio": 2024, "fecha_documento": "2024-10-30", "es_acto_normativo": true, "nuevo": false, "linea_base": false}, {"clave": "resolucion-119-2024", "titulo": "Resolución 000119 del 30 de Julio de 2024", "url_origen": "https://www.dian.gov.co/normatividad/Normatividad/Resoluci%C3%B3n%20000119%20de%2030-07-2024.Pdf", "tipo": "resolucion", "numero": "119", "anio": 2024, "fecha_documento": "2024-07-30", "es_acto_normativo": true, "nuevo": false, "linea_base": false}, {"clave": "resolucion-8-2024", "titulo": "Resolución 00008 del 31 de enero de 2024", "url_origen": "https://www.dian.gov.co/normatividad/Normatividad/Resoluci%C3%B3n%20000008%20de%2031-01-2024.pdf", "tipo": "resolucion", "numero": "8", "anio": 2024, "fecha_documento": "2024-01-31", "es_acto_normativo": true, "nuevo": false, "linea_base": false}, {"clave": "resolucion-165-2023", "titulo": "Resolución 00165 del 01 de noviembre de 2023.", "url_origen": "https://www.dian.gov.co/normatividad/Normatividad/Resolución%20000165%20de%2001-11-2023.pdf", "tipo": "resolucion", "numero": "165", "anio": 2023, "fecha_documento": "2023-11-01", "es_acto_normativo": true, "nuevo": false, "linea_base": false}, {"clave": "url-9c157084bde6f7af", "titulo": "Concepto General - Impuestos saludables del 31 de octubre de 2023", "url_origen": "https://www.dian.gov.co/normatividad/Documents/100208192-1124-Concepto-General-Impuestos-saludables-31102023.pdf", "tipo": "concepto", "numero": null, "anio": 2023, "fecha_documento": "2023-10-31", "es_acto_normativo": false, "nuevo": false, "linea_base": false}, {"clave": "decreto-442-2023", "titulo": "Decreto 442 del 29 de marzo de 2023", "url_origen": "https://www.minhacienda.gov.co/webcenter/ShowProperty?nodeId=%2FConexionContent%2FWCC_CLUSTER-215041%2F%2FidcPrimaryFile&revision=latestreleased", "tipo": "decreto", "numero": "442", "anio": 2023, "fecha_documento": "2023-03-29", "es_acto_normativo": true, "nuevo": false, "linea_base": false}, {"clave": "resolucion-85-2022", "titulo": "Resolución 085 de 8 de abril de 2022", "url_origen": "https://www.dian.gov.co/normatividad/Normatividad/Resoluci%C3%B3n%20000085%20de%2008-04-2022.pdf", "tipo": "resolucion", "numero": "85", "anio": 2022, "fecha_documento": "2022-04-08", "es_acto_normativo": true, "nuevo": false, "linea_base": false}, {"clave": "resolucion-167-2021", "titulo": "Resolución 167 de 30 de diciembre de 2021", "url_origen": "https://www.dian.gov.co/normatividad/Normatividad/Resoluci%C3%B3n%20000167%20de%2030-12-2021.pdf", "tipo": "resolucion", "numero": "167", "anio": 2021, "fecha_documento": "2021-12-30", "es_acto_normativo": true, "nuevo": false, "linea_base": false}, {"clave": "resolucion-28-2022", "titulo": "Resolución 000028 de 2022", "url_origen": "https://www.dian.gov.co/normatividad/Normatividad/Resoluci%c3%b3n%20000028%20de%2028-02-2022.pdf", "tipo": "resolucion", "numero": "28", "anio": 2022, "fecha_documento": null, "es_acto_normativo": true, "nuevo": false, "linea_base": false}, {"clave": "resolucion-63-2021", "titulo": "Resolución 00063 de 2021", "url_origen": "https://www.dian.gov.co/normatividad/Normatividad/Resoluci%c3%b3n%20000063%20de%2030-07-2021.pdf", "tipo": "resolucion", "numero": "63", "anio": 2021, "fecha_documento": null, "es_acto_normativo": true, "nuevo": false, "linea_base": false}, {"clave": "resolucion-12-2021", "titulo": "Resolución 000012 de 2021", "url_origen": "https://www.dian.gov.co/normatividad/Normatividad/Resoluci%c3%b3n%20000012%20de%2009-02-2021.pdf", "tipo": "resolucion", "numero": "12", "anio": 2021, "fecha_documento": null, "es_acto_normativo": true, "nuevo": false, "linea_base": false}, {"clave": "resolucion-13-2021", "titulo": "Resolución 000013 de 2021", "url_origen": "https://www.dian.gov.co/normatividad/Normatividad/Resoluci%c3%b3n%20000013%20de%2011-02-2021.pdf", "tipo": "resolucion", "numero": "13", "anio": 2021, "fecha_documento": null, "es_acto_normativo": true, "nuevo": false, "linea_base": false}, {"clave": "resolucion-15-2021", "titulo": "Resolución 000015 de 2021", "url_origen": "https://www.dian.gov.co/normatividad/Normatividad/Resoluci%c3%b3n%20000015%20de%2011-02-2021.pdf", "tipo": "resolucion", "numero": "15", "anio": 2021, "fecha_documento": null, "es_acto_normativo": true, "nuevo": false, "linea_base": false}, {"clave": "resolucion-99-2020", "titulo": "Resolución 099 de 2020", "url_origen": "https://www.dian.gov.co/normatividad/Normatividad/Resoluci%c3%b3n%20000099%20de%2030-10-2020.pdf", "tipo": "resolucion", "numero": "99", "anio": 2020, "fecha_documento": null, "es_acto_normativo": true, "nuevo": false, "linea_base": false}, {"clave": "resolucion-94-2020", "titulo": "Resolución 094 de 2020", "url_origen": "https://www.dian.gov.co/normatividad/Normatividad/Resoluci%c3%b3n%20000094%20de%2030-09-2020.pdf", "tipo": "resolucion", "numero": "94", "anio": 2020, "fecha_documento": null, "es_acto_normativo": true, "nuevo": false, "linea_base": false}, {"clave": "url-34bbeb83947279cf", "titulo": "Directiva Presidencial 09 de 2020", "url_origen": "https://dapre.presidencia.gov.co/normativa/normativa/DIRECTIVA%20PRESIDENCIAL%20No%2009%20DEL%2017%20DE%20SEPTIEMBRE%20DE%202020.pdf", "tipo": "directiva", "numero": null, "anio": 2020, "fecha_documento": null, "es_acto_normativo": true, "nuevo": false, "linea_base": false}, {"clave": "ley-2010-2019", "titulo": "Ley de crecimiento Ley 2010 de 2019", "url_origen": "https://www.dian.gov.co/impuestos/factura-electronica/Documents/Ley_2010_27_Diciembre_2019.pdf", "tipo": "ley", "numero": "2010", "anio": 2019, "fecha_documento": null, "es_acto_normativo": true, "nuevo": false, "linea_base": false}, {"clave": "decreto-358-2020", "titulo": "Decreto 358 de 2020", "url_origen": "https://www.dian.gov.co/impuestos/factura-electronica/Documents/Decreto_358_05032020.pdf", "tipo": "decreto", "numero": "358", "anio": 2020, "fecha_documento": null, "es_acto_normativo": true, "nuevo": false, "linea_base": false}, {"clave": "resolucion-42-2020", "titulo": "Resolución 042 de 2020", "url_origen": "https://www.dian.gov.co/normatividad/Normatividad/Resoluci%C3%B3n%20000042%20de%2005-05-2020.pdf", "tipo": "resolucion", "numero": "42", "anio": 2020, "fecha_documento": null, "es_acto_normativo": true, "nuevo": false, "linea_base": false}, {"clave": "url-16c50ab8e1904e3a", "titulo": "Listado de los correos de recepción", "url_origen": "https://www.dian.gov.co/impuestos/factura-electronica/Documents/Listado-Correos-de-recepcion-documentos-e-instrumentos-electronicos.zip", "tipo": "otro", "numero": null, "anio": null, "fecha_documento": null, "es_acto_normativo": false, "nuevo": false, "linea_base": false}, {"clave": "url-ebe8baa50eb1311d", "titulo": "Instructivo", "url_origen": "https://www.dian.gov.co/impuestos/factura-electronica/Documents/Instructivo-RADIAN.pdf", "tipo": "instructivo", "numero": null, "anio": null, "fecha_documento": null, "es_acto_normativo": false, "nuevo": false, "linea_base": false}, {"clave": "url-f5c9fc0bdb51c194", "titulo": "Consulta Eventos", "url_origen": "https://www.dian.gov.co/impuestos/factura-electronica/Documents/Consulta-Eventos-RADIAN-FE.pdf", "tipo": "otro", "numero": null, "anio": null, "fecha_documento": null, "es_acto_normativo": false, "nuevo": false, "linea_base": false}, {"clave": "sha256:2c288bc263eff73ec75907b6", "hash_sha256": "2c288bc263eff73ec75907b6c7293b3c4821407316ba1640b3e9ebb0b59eb709", "titulo": "Proyecto Resolución 000000 de 30-07-2026.pdf", "url_origen": "https://www.dian.gov.co/normatividad/Proyectosnormas/Proyecto%20Resoluci%C3%B3n%20000000%20de%2030-07-2026.pdf", "tipo": "proyecto_resolucion", "numero": null, "anio": null, "fecha_documento": "2026-07-30", "fecha_modificacion_fuente": "2026-07-30", "bytes": 264749, "texto_extraido": true, "extracto": "In f o rm ació n P ú b lic a es-CO RES OLUC IÓ N NÚ M E RO es-ES es-ES ( ) es-ES es-ES P o r l a cu a l se crea P L UR A L - M e sa Té c n ica d e Diversida d , E q u id a d e I n clusió n co n E n fo q u e Dife ren cial e I n te rseccio n a l e n la Uni d a d A d m inistrat iva E sp e cial Dir e cción d e Imp u e st o s y A d u a n a s Nacio n a les DIA N y s e d icta n o tra s d isp o sici o n e s es-ES es-ES E L DIRECT OR GE NE RA L DE LA UN IDAD AD M INIS T RA T I V A E S P E CIAL DIRECC I Ó N DE IMPUE S T OS Y ADU AN AS NA CIONAL E S - DIAN es-ES es-ES E n e jerci cio d e la s f a c u lta d e s le g a les, e n e sp e cial, las co n te n ida s e n la L e y 2 2 7 7 d e 2 0 2 2 , e l Decr e to 1 0 8 3 d e 2 0 1 5 e n e l a rt ícu lo 2 .2 . 2 2 . 3 .8 , e l n u m e ral 2 0 d e l a rtíc u lo 8 d e l Decret o 1 7 4 2 d e 2 0 2 0 , y es-ES es-CO CONSIDE RA ND O es-CO es-CO 1. es-CO Qu e la D e clara ción Un iversa l d e Dere c h o s H u m a n o s , a p rob a d a e n 1 9 4 8 , e sta b lece q u e t o d a s las p e rso n a s n a ce n li b res e ig u a le s e n d ign id a d y d e rech o s y q u e d e b e n g o za r d e e st o s sin d istinció n a l g u n a , re a firm a n d o e l p ri n ", "en_materia": true, "es_acto_normativo": false, "nota": "Proyecto de resolución: no está firmado ni vigente. Es señal temprana.", "nuevo": false, "linea_base": false}, {"clave": "sha256:5872b2ceb9b71af4f0c3c1b4", "hash_sha256": "5872b2ceb9b71af4f0c3c1b4b7dce8dffb45b53c159152c2ab9f0a745d6e1cb0", "titulo": "Proyecto Resolución 000000 de 29-07-2026.pdf", "url_origen": "https://www.dian.gov.co/normatividad/Proyectosnormas/Proyecto%20Resoluci%C3%B3n%20000000%20de%2029-07-2026.pdf", "tipo": "proyecto_resolucion", "numero": null, "anio": null, "fecha_documento": "2026-07-29", "fecha_modificacion_fuente": "2026-07-29", "bytes": 300280, "texto_extraido": true, "extracto": "Times New Roman Aptos Arial Arial Adobe UCS Adobe UCS Adobe UCS Adobe UCS I nf o rm a c i n P b l i c a R es erv a d a RE S O L UCI N N M E RO ( ) P or l a c u al s e m o di f i c a n l os ar t c ul os 1 .7 . 1 .1 . 1 ., 1 .7 . 1 .4 . 2 ., 1 .7 .1 . 4 .3 ., 1 . 7 .1 . 4 .4 ., 1 . 7. 1. 4. 6. , 1. 7. 1. 4. 7. y 1. 7 . 1. 4. 9. y s e d er oga el ar t c ul o 1 . 7. 1. 1. 2 . d el C ap t ul o 1 del T t ul o 7 de l a P ar t e 1 d e l a R es ol uc i n 2 27 del 2 3 d e s e pt i em br e d e 20 25, ni c a en M at er i a T r i but ar i a , A dua ner a y C a m bi ar i a en l o de c om pet enc i a de l a U ni dad A d m i ni s t r at i v a E s pec i al D i r ec c i n de I m pues t o s y A du an as N ac i o nal e s DI A N. E L DI RE CT O R G E NE RAL DE L A UNI DAD ADM I NI S T RAT I V A E S P E CI AL DI RE CCI N DE I M P UE S T O S Y AD UANAS NACI O NAL E S E n us o d e l as f ac ul t ad es l eg al es y e n es pec i al l as di s p ues t as e n el num er al 1 8 d el ar t c ul o 3 y el nu m er al 2 del ar t c ul o 8 del D ec r et o 17 42 d e 2 020 . CO NS I DE RANDO Q u e l os a r t c u l o s 86 9 y 8 69 - 1 del E s t a t ut o T r i but ar i o i nc or por a n e n la le g is la c i n t r ib u t a ", "en_materia": true, "es_acto_normativo": false, "nota": "Proyecto de resolución: no está firmado ni vigente. Es señal temprana.", "nuevo": false, "linea_base": false}, {"clave": "sha256:1c5a06d52e146db69a1b4582", "hash_sha256": "1c5a06d52e146db69a1b45823a7f606a4b013781e019e4528d79e3b4a4a66b09", "titulo": "Proyecto Resolución 000000 de 17-06-2026.pdf", "url_origen": "https://www.dian.gov.co/normatividad/Proyectosnormas/Proyecto%20Resoluci%C3%B3n%20000000%20de%2017-06-2026.pdf", "tipo": "proyecto_resolucion", "numero": null, "anio": null, "fecha_documento": "2026-06-17", "fecha_modificacion_fuente": "2026-06-24", "bytes": 413676, "texto_extraido": true, "extracto": "Times New Roman Calibri Arial Arial Arial Adobe UCS Adobe UCS Adobe UCS Adobe UCS I n f o r m a ci n P b l i ca RE S O L UCI N N M E RO ( ) P or l a c u al s e di c t an di s pos i c i ones qu e d es ar r ol l an l a L ey X X X d el X X de X X de 202 6 E L DI RE CT O R G E NE RAL DE L A UNI DAD ADM I NI S T RAT I V A E S P E CI AL DI RE CCI N DE I M P UE S T O S Y ADUANAS NACI O NAL E S E n us o d e l as f ac ul t a d es l egal es y , en es pec i al , l as di s p ues t as en el nu m er al 11 ar t c ul o 18 9 de l a C ons t i t uc i n P ol t i c a de C ol o m bi a , l a L ey X X de 202 6 y Adobe UCS el ar t c ul o 82 del D ec r et o 1 742 de 2 020 CO NS I DE RANDO Q ue el ar t c ul o t er c er o de l a s en t enc i a de l a C or t e C ons t i t uc i on al C - 072 d e 2 02 5, al dec l a r ar l a i nex eq ui bi l i dad d el ar t c ul o 6 8 de l a L ey 227 7 del 13 d e di c i e m br e d e 20 22, es t abl ec i ef ec t os di f er i dos d el D ec r et o L ey 920 d e 20 2 3 h as t a el 2 0 de j uni o de 20 26, l aps o de nt r o del c ual el C ongr es o de l a R ep bl i c a, e n ej er c i c i o de s us c o m p et e nc i a s c ons t i t uc i o nal es y de l a l i ber t ad de c o nf i g ur ac", "en_materia": true, "es_acto_normativo": false, "nota": "Proyecto de resolución: no está firmado ni vigente. Es señal temprana.", "nuevo": false, "linea_base": false}, {"clave": "sha256:59a4f73b5ced06553db4a560", "hash_sha256": "59a4f73b5ced06553db4a560f7d70c552cde7ac84bb90cf29af3084fdac7f917", "titulo": "Proyecto Resolución 000000 de 05-06-2026.pdf", "url_origen": "https://www.dian.gov.co/normatividad/Proyectosnormas/Proyecto%20Resoluci%C3%B3n%20000000%20de%2005-06-2026.pdf", "tipo": "proyecto_resolucion", "numero": null, "anio": null, "fecha_documento": "2026-06-05", "fecha_modificacion_fuente": "2026-06-05", "bytes": 474704, "texto_extraido": true, "extracto": "Identity Adobe es-CO es-CO RES OLUC IÓ N NÚ M E RO es-CO es-CO ( Fe c h a ) es-CO es-CO P o r l a cu a l se cre a el Com ité T é cn ico d e P ro g ramas, Ca m p a ñ a s y A ccion e s d e C o n tro l d e la Unid a d A d m inistrat iv a E sp e cial Dir e cción d e I m p u e sto s y A d u a n a s Na cion a les - DIA N. es-CO es-CO E L DIRECT OR GE NE RA L DE LA UNIDA D AD M INIS T RA T I V A E S P E CIAL DIRE CC IÓ N DE IMPUE S T OS Y AD UA NA S NAC IO NA LE S es-CO es-CO E n u s o d e la s f a cu lt a d e s le g a les y e n e s p e ci a l las d isp u e st a s e n lo s n u m e rale s 2 , 4 , 1 4 , 1 9 , 20 y 3 7 d e l a rt ícu lo 8 d e l Decre to 1 7 4 2 d e 2 0 2 0 y es-CO es-CO CONSIDE RA ND O es-CO es-CO Qu e e l a rtícu l o 5 6 2 d e l E st a tu t o Tr ib u ta ri o e st a b lece la e xist e n cia d e l Com it é d e p ro g ramas e n la Di recció n d e I m p u e sto s y A d u a n a s Na ci o n a les . es-CO es-CO Qu e c o n f o rm e a lo e st a b lecid o e n los a rtícu lo s 1 4 7 a 1 5 8 d e la L e y 2 2 3 de 1 9 9 5 , s e creó e l p lan a n u a l a n ti e va sió n , d e n o m i n a d o p lan a n u a l d e c h o q u e co n tra la e v a sión y e l co n tra b a n d o e n e l a rtíc u", "en_materia": true, "es_acto_normativo": false, "nota": "Proyecto de resolución: no está firmado ni vigente. Es señal temprana.", "nuevo": false, "linea_base": false}, {"clave": "sha256:79d11537f536ff84e89f2dbf", "hash_sha256": "79d11537f536ff84e89f2dbf4923b069de7e71eadc67a4125d4e7a01272df2b3", "titulo": "Proyecto Resolución 000000 de 29-05-2026.pdf", "url_origen": "https://www.dian.gov.co/normatividad/Proyectosnormas/Proyecto%20Resoluci%C3%B3n%20000000%20de%2029-05-2026.pdf", "tipo": "proyecto_resolucion", "numero": null, "anio": null, "fecha_documento": "2026-05-29", "fecha_modificacion_fuente": "2026-05-29", "bytes": 1502659, "texto_extraido": true, "extracto": ":\u00073{ _ô\u0018\b\u0005þ% q %É\b?\u0001G XÌ\u0014ö\u0006ÜÂZ`´\u0017D\u0005Ï pp%ß\b¼Áqp]°\u0014`\u0007 Ât\u00100\u001b.\u0005ñAy\u0010`H I\u0004§B\u0003° :\u00073{ _ô\u0018\b\u0005þ% q %É\b?\u0001G XÌ\u0014ö\u0006ÜÂZ`´\u0017D\u0005Ï pp%ß\b¼Áqp]°\u0014`\u0007 Ât\u00100\u001b.\u0005ñAy\u0010`H I\u0004§B\u0003° /Helv 0 Tf 0 g Identity Adobe Arial Identity Adobe Arial Identity Adobe Times New Roman Adobe UCS Adobe UCS 7 B P Z d s x    ¥ ½ Î ð\u0001\u0010\u0001\\ ¾ Ø\u0001\u0002\u0001\u0017\u0001,\u0001c ê\u0001\b A K U _ s ¦\u0001 \u0001\u0001³ A d * ë ú\u0001\u000e\u00018\u0002t , @   ¶ À Ì Ü æ ð ÿ\u0001 \u0001 \u0001,\u0001;\u0001D\u0001V\u0001c ÷ W d\u0001\u0010\u00016 P\u0001± ÿ¶ 9 N D\u0003Ì å $\u0001\u0010 B\u0001\"\u0001¤ ð ` à \u000e 9\u0005ã\u0001\u0002 ,þNÿ8\u0002i\u0003½\u0001\u0016 ÿ \u000e T \u001b =\u0001q A \u000f P ý \u0015\u0001O 5þR , Ó\u0001\u0003\u0004°\u0001Ò ¶ À \u0002eÿ\u0003wþl Ë © \\ @\u0004v\u0007D\u0004r\u0004 \u0004û@BUT@?>=<;:987543210/.-,+* \u0001\u0001\u0019þç \u0001  \u0001¬\u0001\u0019 \u0003 $@\u0015\u00028 \u0002&\u000f 0 \u0004 \u0019\u0004gv\u0018+N\u0010ô]Mý ?Mí103\u0011!\u0011\u0001\u0019\u0001\u0019þç \u0001ÿýÿç\u0002;\u0005Ó \u0003 8@ \u0001\u0001I\u0002\u0003\u0014\u0002\u0002\u0003\u0002\u0001 \u0003 \u0001ë\u0002\u001a\u0005\u0003ë \u0019\u0004l\u0018+N\u0010ôMíN\u0010öMí ?<?<\u0005.+}\u0010Ä10\u0007\u00013\u0001\u0003\u0001kÓþ\u0019\u0005ìú\u0014 \u0002 Vÿç\u0004\u000e\u0005À \u000e @Kx  §\u0001ª\u0007ª §\u000e· È \bV\u0011Y\u0016Y\u001aV g\u0011h\u0016h\u001ag \b9\u00029\u00066 6 I\u0002I\u0006E F § Ë\u0002É\u0006Ä Ä Ù\u0002Û\u0006Ô Ô \u0011\u0010\u0018 \u0018\u0002\u0018¸ÿÀ@%\u0012\u00164\u0018¦\b \u000f/\u000f\u0002\u000f@\u0012\u00164\u000f¦ \u0005 ØO\u0004\u0001\u0004\u001a\"\u0014Ø \u0019!ÓÂ\u0018+N\u0010ôMíN\u0010öqMí ?í+q?í+q10\u0001] ]]\u00012\u0017\u0016\u0011\u0010\u0007\u0006#\" \u0011\u001076\u0017\"\u0006\u0007\u0006\u0011\u0010\u0016\u001632676\u0011\u0010&&\u00022ÕxwÕÖþúwÕ3P\u0016 4O33P\u0016 4O\u0005À´þ_þ`¶\u0001I\u0001¦\u0001¶éATmþþþþÁ@ATl\u0001\u0002\u0001\u0002ÁA \u0001 ¢ \u0003&\u0005À V@ k\u0002{\u0002\u0002\u0003\u0002\u0004¸\u0001 \u00067\u001aH\u0004C\u0018C\u0019C\u001a\b$\u0018$\u0019$\u001a\u0003\u0016&\u0004V\u0004\u0018\u001b  ª ª \b\u0012 \u0010 1 v   Ö \b ¸ÿÀ@\u0016\u0014\u00154 \u0002\u0010 \u000f \u0010 \u0002 0 @ \u0003 ¸ÿÀ³\u0012\u00164 ¸\u0002¡³\u0002\u0001 \u000f¸\u0001V@# / \u0002 @\u0012\u00164 ¦\u0013\u0005 Ø\u0016\u0016\u0001O \u0001 \u001a \u000fØ\u0010w\u0002\u0019 ÓÂ\u0018+N\u0010ôMôíN\u0010öq<<M\u0010í ?ý+qä?<ý+]q<\u0011\u00129\u0001\u00113+]C\\X¹ ÿÀ²\u00119 ¸ÿÀ²\u000f9 ¸ÿÀ@\u000e\u00109\u0004\b\u00109\u0005\b\u00119\u0004\b\u00119++++++Y±\u0006\u0002CTX@ \u001b\u0019\u001b\u0002\u001b\u0013", "en_materia": true, "es_acto_normativo": false, "nota": "Proyecto de resolución: no está firmado ni vigente. Es señal temprana.", "nuevo": false, "linea_base": false}, {"clave": "sha256:5037c02c6896097374ad54c3", "hash_sha256": "5037c02c6896097374ad54c3c6b116ba74131957ff7a6ff64654f63ed374c95c", "titulo": "Proyecto Resolución 000000 de 25-05-2026.pdf", "url_origen": "https://www.dian.gov.co/normatividad/Proyectosnormas/Proyecto%20Resoluci%C3%B3n%20000000%20de%2025-05-2026.pdf", "tipo": "proyecto_resolucion", "numero": null, "anio": null, "fecha_documento": "2026-05-25", "fecha_modificacion_fuente": "2026-05-26", "bytes": 4617170, "texto_extraido": true, "extracto": "Identity Adobe RES OLUC IÓ N NÚ M E RO ( ) RES OLUC IÓ N NÚ M E RO ( ) I n for mac ió n P ú b l ic a I n for mac ió n P ú b l ic a es-ES es-ES es-ES es-ES es-ES es-ES es-ES es-ES P o r l a cu a l se a d o p ta y a ctu a li za e l e s q u e m a g e n e ral d e a d m inistrac ión , e j e cu ción , a rti cu lació n y se g u im ie n to d e l P ro g rama d e M o d e rniza ci ó n d e la U n ida d A d m inistrat iva E sp e cial Dir e cción d e I m p u e sto s y A d u a n a s Nacio n a les - DIA N , se d e leg a n u n a s fu n cio n e s y s e d ict a n o tra s d ispo sici o n e s . es-ES es-ES es-ES EL DIRECT OR GE NE RA L DE LA UN IDAD AD M INIS T RA T I V A E S P E CIAL DIRECC IÓ N DE IMPUE S T OS Y AD UA NA S NA CIONAL E S - DIAN es-ES es-ES E n u s o d e la s f a cu lt a d e s le g a les y e n e s p e ci a l las d isp u e st a s en e l n u m e ral 1 y 2 0 d e l a rtícu lo 8 y e l a rtícu lo 8 0 d e l Decret o 1 7 4 2 d e 2 0 2 0 ; a rt Adobe UCS í cu l o 9 d e l a L e y 4 8 9 d e 1 9 9 8 ; L e y 1 9 5 5 d e 2 0 1 9 ; e l Decret o 1 9 4 9 d e 2 0 1 9 y ; es-ES es-ES es-ES CONSIDE RA ND O es-ES es-ES Qu e la L e y 1 8 1 9 d e 2 0 1 6 f a cu ltó a la Uni d a d A d m i n istrat iva E s p e", "en_materia": true, "es_acto_normativo": false, "nota": "Proyecto de resolución: no está firmado ni vigente. Es señal temprana.", "nuevo": false, "linea_base": false}, {"clave": "sha256:73b21ab808fca433d54afde0", "hash_sha256": "73b21ab808fca433d54afde021b3a01d30e0b0e7cb557f6ecd40d580371182d9", "titulo": "Proyecto Resolución 000000 de 14-04-2026.pdf", "url_origen": "https://www.dian.gov.co/normatividad/Proyectosnormas/Proyecto%20Resoluci%C3%B3n%20000000%20de%2014-04-2026.pdf", "tipo": "proyecto_resolucion", "numero": null, "anio": null, "fecha_documento": "2026-04-14", "fecha_modificacion_fuente": "2026-05-20", "bytes": 528401, "texto_extraido": true, "extracto": "Times New Roman Aptos Arial Arial Arial Adobe UCS Adobe UCS Adobe UCS Adobe UCS I nf o rm a c i n P b l i c a RE S O L UCI N N M E RO ( ) P or l a c u al s e adi c i on a el a r t c u l o 1. 2. 2 . 4 0 al C ap t ul o 2 del T t ul o 2 de l a P ar t e 1 y un nuev o f or m ul ar i o al nu m er al 1 d el ar t c ul o 3 d e la R es ol uc i n N o 0 0 022 7 del 23 de s ept i e m br e de 20 25 R es ol uc i n ni c a en M a t er i a T r i but ar i a, A d ua n er a y C a m bi ar i a . E L DI RE CT O R G E NE RAL DE L A UNI DAD ADM I NI S T RAT I V A E S P E CI AL DI RE CCI N DE I M P UE S T O S Y AD UANAS NACI O NAL E S E n us o d e l as f ac ul t ad es l eg al es y e n es pec i al de l as qu e c o nf i er e n el nu m er al 2 d el ar t c ul o 8 d el D ec r et o 174 2 de 20 20, l os ar t c ul os 5 78 , 579 - 2 , 2 98, 2 98 - 1 y 298 - 2 del E s ta tu to T r i b u ta r i o y l os ar t c ul os 7 a l 14 del D ec r et o L egi s l a t i v o 2 40 d e 2 02 6 y CO NS I DE RANDO Q ue m edi a nt e el D ec r et o Le gi s l at i v o 01 50 d el 1 1 de f e br er o de 2 0 26, el G obi er no nac i on al dec l ar el es t a do d e e m er g enc i a ec on m i c a , s oc i al y ec ol gi c a e n l os dep ar t a m en", "en_materia": true, "es_acto_normativo": false, "nota": "Proyecto de resolución: no está firmado ni vigente. Es señal temprana.", "nuevo": false, "linea_base": false}, {"clave": "sha256:ea3c1107bb744693440f4df3", "hash_sha256": "ea3c1107bb744693440f4df3c1c897ae34dd08f80762800d386d68e07f8e7059", "titulo": "Proyecto Resolución 000000 de 13-03-2026.pdf", "url_origen": "https://www.dian.gov.co/normatividad/Proyectosnormas/Proyecto%20Resoluci%C3%B3n%20000000%20de%2013-03-2026.pdf", "tipo": "proyecto_resolucion", "numero": null, "anio": null, "fecha_documento": "2026-03-13", "fecha_modificacion_fuente": "2026-05-20", "bytes": 4310348, "texto_extraido": true, "extracto": "/Helv 0 Tf 0 g Identity Adobe es-MX es-MX RESOLUCIÓN NÚMERO es-ES es-ES ( ) es-ES es-ES Adobe UCS Por la cual se modi fica el instructivo del Recibo O ficial de P ago I m puesto s N acionale s Formula rio N°. 490 c ontenido en la tabla de form ula rios de que t rata e l artículo 3 de la Ú nica en M ateria Tributaria, Aduanera y Cambiaria es-ES es-ES es-ES EL DIRECTOR GENERAL DE LA UNIDAD ADMINISTRATIVA ESPECIAL DIRECCIÓN DE IMPUESTOS Y ADUANA S NACIONALES es-ES es-ES E n uso de s us facu ltades legales, en especia l de las qu e confieren el nu meral 2 de l artículo 8 del Decreto número 1742 de 2020 , los a rtículos 578 y 631 - 4 de l Estatuto Tributario , el a rtí culo 24 del Dec reto 1017 de 2 025 y el artículo 5 de l Decreto Legislativo 0173 de 2026 y es-ES es-ES es-ES CONSIDERAND O es-ES es-ES Que el De creto Legislativo 0173 del 24 de febrero de 2026 , exped ido en desarrollo del artículo 215 de la Constitución Política, ad icionó el nu meral 6 al artículo 2 92 - 3 de l Estatuto Tributario para in cluir como suje tos pasivos de l impuesto al pa tri monio a p ersona s jurídicas y sociedades de he ch o contribuyentes de l impuesto sobre la renta; y su artículo 5 dispuso que la DI", "en_materia": true, "es_acto_normativo": false, "nota": "Proyecto de resolución: no está firmado ni vigente. Es señal temprana.", "nuevo": false, "linea_base": false}, {"clave": "sha256:f6517374ad3695c5162d3523", "hash_sha256": "f6517374ad3695c5162d3523be47fbcc72a89cdf37ab45f15df298a4f99a22ca", "titulo": "Proyecto Resolución 000000 de 10-03-2026.pdf", "url_origen": "https://www.dian.gov.co/normatividad/Proyectosnormas/Proyecto%20Resoluci%C3%B3n%20000000%20de%2010-03-2026.pdf", "tipo": "proyecto_resolucion", "numero": null, "anio": null, "fecha_documento": "2026-03-10", "fecha_modificacion_fuente": "2026-05-20", "bytes": 289272, "texto_extraido": false, "extracto": null, "en_materia": true, "es_acto_normativo": false, "nota": "Proyecto de resolución: no está firmado ni vigente. Es señal temprana.", "nuevo": false, "linea_base": false}, {"clave": "sha256:ca76df15d6f1960edb865900", "hash_sha256": "ca76df15d6f1960edb8659005bc7e590d717a8266f1e6cce261ad86ca5d5de4c", "titulo": "Proyecto Resolución 000000 de 20-05-2026.pdf", "url_origen": "https://www.dian.gov.co/normatividad/Proyectosnormas/Proyecto%20Resoluci%C3%B3n%20000000%20de%2020-05-2026.pdf", "tipo": "proyecto_resolucion", "numero": null, "anio": null, "fecha_documento": "2026-05-20", "fecha_modificacion_fuente": "2026-05-20", "bytes": 2184990, "texto_extraido": true, "extracto": "Identity Adobe Identity Adobe es-MX es-MX RES OLUC IÓ N NÚ M E RO es-MX es-ES ( ) es-ES es-CO P o r l a cu a l se cre a u n Gru p o I n te r n o d e Trab a jo d e n o m in a d o C o o rd ina ción e n la Un ida d A d m i n istrat iva E s p e cia l Di rección d e Imp u e s t o s y A d u a n a s Na ci o n a l e s - DIA N - , se a d ici o n a n la s R e so luci o n e s 0 0 0 0 6 5 y 0 0 0 0 7 0 d e l 9 d e a g o sto d e 2 0 2 1 es-CO y se d ict a n o tra s d ispo sici o n e s. es-ES es-CO E L DIRECT OR GE NE RA L DE LA UNIDA D AD M INIS T RA T I V A E S P E CIAL es-CO DIRECC IÓ N DE IMP UES T O S Y ADU AN A S NAC IO NA LES es-CO es-ES E n u s o d e su s fa cu lt a d e s le g a les, e n e s p e cial las d isp u e sta s e n e l a r tí cu lo 1 1 5 d e la L e y 4 8 9 d e 1 9 9 8 y los a rtíc u los 8 º , 8 1 y 8 2 d e l De cret o 1 7 4 2 d e 2 0 2 0 , y es-CO es-CO CONSIDE RA ND O es-CO es-CO Qu e c o rr e sp o n d e a l D ir e cto r Ge n e ral d e la Unid a d A d m inistrat iva E sp e ci a l Di rección d e Im p u e st o s y A d u a n a s Nacio n a les - DIA N - la fa cu lta d d e cre a r, co n fo rm a r y o rga n iz a r los Gru p o s In te rn o s d e T rab a jo, in d ican d o e n e l a cto", "en_materia": true, "es_acto_normativo": false, "nota": "Proyecto de resolución: no está firmado ni vigente. Es señal temprana.", "nuevo": false, "linea_base": false}, {"clave": "sha256:b28feeb9186758feb908a63f", "hash_sha256": "b28feeb9186758feb908a63fc405bf56c2ac3b65d1292f1f0140695807bfbce8", "titulo": "Proyecto Resolución 000000 de 27-03-2026.pdf", "url_origen": "https://www.dian.gov.co/normatividad/Proyectosnormas/Proyecto%20Resoluci%C3%B3n%20000000%20de%2027-03-2026.pdf", "tipo": "proyecto_resolucion", "numero": null, "anio": null, "fecha_documento": "2026-03-27", "fecha_modificacion_fuente": "2026-05-06", "bytes": 382410, "texto_extraido": true, "extracto": "Identity Adobe Identity Adobe Adobe UCS In f o rm ació n P ú b lic a es-MX RES OLUC IÓ N NÚ M E RO es-ES es-ES ( ) es-ES es-ES es-ES P o r l a cu a l se a d ici o n a u n a su b s e cción tra n sit o ri a a la S e cció n 5 d e l Cap ít u l o 1 d e l Tít u lo e sta b l e ce r las co n d ici o n e s p a ra la t ra n sm isi ó n d e f a ctu ras e lect rón ic a s e n ca so s d e re co n o ci m ien to vo lu n ta ri o d e l inc u m p li m ien t o d e la o b li g a ci ó n f o rm a l d e fa ctu r a r, e n d e sa rr o ll o d e l o d is p u e st o e n a rtíc u lo 5 d e l Decre to es-CO L e g isl a tivo es-ES 0 2 4 0 d e 2 0 2 6 . es-ES es-ES es-ES E L DIRECT OR GE NE RA L DE LA UNIDA D AD M INIS T RA T I V A E S P E CIAL DIRE CC IÓ N DE IMPUE S T OS Y AD UA NA S NAC IO NA LE S - DIAN es-ES es-ES es-ES E n e jerci cio d e la s f a c u lta d e s le g a les y, e n e sp e cial, las c o n s a g rad a s e n e l n u m e ral 2 d e l a rtícu lo 8 d e l Decre to 1 7 4 2 d e 2 0 2 0 , e l a rt ícu lo 6 1 6 - 1 d e l E sta tu t o T ri b u ta ri o , e l Decre to L e g isl a tivo 1 5 0 d e 2 0 2 6 y e l Decre to L e g isl a tivo 0 2 4 0 d e 2 0 2 6 , es-ES es-ES es-ES CONSIDE RA ND O : es-CO es-ES es-ES es", "en_materia": true, "es_acto_normativo": false, "nota": "Proyecto de resolución: no está firmado ni vigente. Es señal temprana.", "nuevo": false, "linea_base": false}, {"clave": "sha256:5864a7a3b4d00d8b0b24ff51", "hash_sha256": "5864a7a3b4d00d8b0b24ff51979cc396c3f22fdf32bc88b6a541767dc71f4c8b", "titulo": "Proyecto Resolución 000000 de 05-05-2026.pdf", "url_origen": "https://www.dian.gov.co/normatividad/Proyectosnormas/Proyecto%20Resoluci%C3%B3n%20000000%20de%2005-05-2026.pdf", "tipo": "proyecto_resolucion", "numero": null, "anio": null, "fecha_documento": "2026-05-05", "fecha_modificacion_fuente": "2026-05-05", "bytes": 502930, "texto_extraido": true, "extracto": "Identity Adobe es-ES es-ES RES OLUC IÓ N es-ES es-ES NÚ M E RO es-ES es-ES es-ES ( es-ES es-ES Fe c h a es-ES es-ES ) es-ES es-ES es-ES P o r l a cu a l es-ES se re o rga n iza la e s tru ctu ra y fu n cion e s d es-ES el es-ES es-ES Co m ité Té cn i co d e P rog ra m a s , es-ES Cam p a ñ a s y A ccio n e s d e Co n tro l d e la Un id a d A d m inistrat iv a E sp e c ial Dir e cción d e es-ES Im p u e st o s y A d u a n a s Nacio n a les es-ES - es-ES DIA N es-ES es-ES y es-ES se es-ES su stitu y e la Re s o lució n 0 0 0 0 1 8 d e 2 0 1 6 es-ES . es-ES es-ES es-ES E L DIRECT OR GE NE RA L DE LA UNIDA D AD M INIS T RA T I V A E S P E CIAL DIRE CC IÓ N es-ES DE IMPUE S T OS Y AD UA NA S NAC IO NA LE S es-ES es-ES es-ES E es-ES n es-ES u s o d e la s f a cu lt a d e s le g a les y e n e s p e ci a l las d isp u e st a s e n es-ES lo s n u m e rale s 2 , 4 , es-ES 1 4 , es-ES 1 9 , es-ES 20 es-ES y 3 7 d e l a rt ícu lo 8 d e l Decre to 1 7 4 2 d e 2 0 2 0 es-ES es-ES y es-ES es-ES es-ES CONSIDE RA ND O es-ES es-ES es-ES Qu e c o n f o rm e es-ES a es-ES lo e st a b lecid o e n los a rtícu lo s 1 4 7 a 1 5 8 d e la L e y 2 2 3 es-ES de es-ES es-ES 1 9 9 5 , s e creó e l es-ES p es-ES", "en_materia": true, "es_acto_normativo": false, "nota": "Proyecto de resolución: no está firmado ni vigente. Es señal temprana.", "nuevo": false, "linea_base": false}, {"clave": "slug:ng-en-septiembre-comienzan-los-vencimientos-del-regimen-de-precios-de-transferencia-para-el-anio-gravable-2025.aspx", "hash_sha256": "d89d8000b3102de45f6ce57f0ab85770c8eb40a83533e223208d030c2d71ba65", "hash_volatil": true, "titulo": "En septiembre comienzan los vencimientos del Régimen de Precios de Transferencia para el año gravable 2025", "url_origen": "https://www.dian.gov.co/Prensa/Paginas/NG-En-septiembre-comienzan-los-vencimientos-del-Regimen-de-Precios-de-Transferencia-para-el-anio-gravable-2025.aspx", "tipo": "aviso_operativo", "numero": null, "anio": 2026, "fecha_documento": "2026-08-07", "extracto": "Prensa\nEn septiembre comienzan los vencimientos del Régimen de Precios de Transferencia para el año gravable 2025\nDirección de Impuestos y Aduanas Nacionales\n¿Sabes que es GOV.CO?\n¿Sabes que es GOV.CO? Conócelo aquí\n-->\nIcono Twitter\nIcono YouTube\nIcono LinkedIn\nIcono Facebook\nIcono Instagram\nIcono Tiktok\nParece que el explorador no tiene JavaScript habilitado. Active JavaScript e inténtelo de nuevo.\nIcono Cambio de idioma\nIcono Aumento de tamaño de texto\nIcono Tamaño de texto normal\nIcono disminución del tamaño de texto\nAyudas\nAlto contraste\nPortal DIAN\nDIAN\nImpuestos\nAduanas\nFiscalización y Control​\nTransaccional\nNormatividad\nTransparencia\nAtención y Servicios a la Ciudadanía\nParticipa\nPrensaActualmente seleccionado\nLa ubicación de esta página es:\nPortal DIANPrensaPáginasNG-En-septiembre-comienzan-los-vencimientos-del-Regimen-de-Precios-de-Transferencia-para-el-anio-gravable-2025\nEn septiembre comienzan los vencimientos del Régimen de Precios de Transferencia para el año gravable 2025\nEn septiembre comienzan los vencimientos del Régimen de Precios de Transferencia para el año gravable 2025\n20/08/2026\nBogotá D.C\nImagen de la página\nLeyenda de imagen\nA partir del próximo 9 septiemb", "en_materia": true, "es_acto_normativo": false, "urls_equivalentes": ["https://www.dian.gov.co/Prensa/Paginas/NG-En-septiembre-comienzan-los-vencimientos-del-Regimen-de-Precios-de-Transferencia-para-el-anio-gravable-2025.aspx"], "nota": "Aviso operativo: cambia el comportamiento de un servicio sin que medie una resolución. No es norma.", "nuevo": false, "linea_base": false}, {"clave": "slug:ng-llega-el-ciclo-de-capacitaciones-en-factura-electronica-cuatro-sesiones-gratuitas.aspx", "hash_sha256": "45aaef9d8859dbf2943ce15f5f9938c82937576904e6cf6919a9f8ad73847182", "hash_volatil": true, "titulo": "Llega el ciclo de capacitaciones en Factura Electrónica: cuatro sesiones gratuitas", "url_origen": "https://www.dian.gov.co/Prensa/Paginas/NG-Llega-el-ciclo-de-capacitaciones-en-Factura-Electronica-cuatro-sesiones-gratuitas.aspx", "tipo": "aviso_operativo", "numero": null, "anio": 2026, "fecha_documento": "2026-08-06", "extracto": "Prensa\nLlega el ciclo de capacitaciones en Factura Electrónica: cuatro sesiones gratuitas\nDirección de Impuestos y Aduanas Nacionales\n¿Sabes que es GOV.CO?\n¿Sabes que es GOV.CO? Conócelo aquí\n-->\nIcono Twitter\nIcono YouTube\nIcono LinkedIn\nIcono Facebook\nIcono Instagram\nIcono Tiktok\nParece que el explorador no tiene JavaScript habilitado. Active JavaScript e inténtelo de nuevo.\nIcono Cambio de idioma\nIcono Aumento de tamaño de texto\nIcono Tamaño de texto normal\nIcono disminución del tamaño de texto\nAyudas\nAlto contraste\nPortal DIAN\nDIAN\nImpuestos\nAduanas\nFiscalización y Control​\nTransaccional\nNormatividad\nTransparencia\nAtención y Servicios a la Ciudadanía\nParticipa\nPrensaActualmente seleccionado\nLa ubicación de esta página es:\nPortal DIANPrensaPáginasNG-Llega-el-ciclo-de-capacitaciones-en-Factura-Electronica-cuatro-sesiones-gratuitas\nLlega el ciclo de capacitaciones en Factura Electrónica: cuatro sesiones gratuitas\nLlega el ciclo de capacitaciones en Factura Electrónica: cuatro sesiones gratuitas\n06/08/2026\nBogotá D.C\nImagen de la página\nLeyenda de imagen\nDel 11 de agosto al 22 de septiembre, cuatro martes para dominar la facturación electrónica ante la DIAN: desde los primeros paso", "en_materia": true, "es_acto_normativo": false, "urls_equivalentes": ["https://www.dian.gov.co/Prensa/Paginas/NG-Llega-el-ciclo-de-capacitaciones-en-Factura-Electronica-cuatro-sesiones-gratuitas.aspx"], "nota": "Aviso operativo: cambia el comportamiento de un servicio sin que medie una resolución. No es norma.", "nuevo": false, "linea_base": false}, {"clave": "slug:ng-dian-fortalece-seguridad-de-catalogo-de-factura-electronica.aspx", "hash_sha256": "173f8abacb0b827d40ddfe448a8bcb1f33b15f125521f692a400bce2d2550732", "hash_volatil": true, "titulo": "La DIAN fortalece la seguridad del Catálogo de factura electrónica", "url_origen": "https://www.dian.gov.co/Prensa/Paginas/ng-dian-fortalece-seguridad-de-catalogo-de-factura-electronica.aspx", "tipo": "aviso_operativo", "numero": null, "anio": 2026, "fecha_documento": "2026-07-23", "extracto": "Prensa\nLa DIAN fortalece la seguridad del Catálogo de factura electrónica\nDirección de Impuestos y Aduanas Nacionales\n¿Sabes que es GOV.CO?\n¿Sabes que es GOV.CO? Conócelo aquí\n-->\nIcono Twitter\nIcono YouTube\nIcono LinkedIn\nIcono Facebook\nIcono Instagram\nIcono Tiktok\nParece que el explorador no tiene JavaScript habilitado. Active JavaScript e inténtelo de nuevo.\nIcono Cambio de idioma\nIcono Aumento de tamaño de texto\nIcono Tamaño de texto normal\nIcono disminución del tamaño de texto\nAyudas\nAlto contraste\nPortal DIAN\nDIAN\nImpuestos\nAduanas\nFiscalización y Control​\nTransaccional\nNormatividad\nTransparencia\nAtención y Servicios a la Ciudadanía\nParticipa\nPrensaActualmente seleccionado\nLa ubicación de esta página es:\nPortal DIANPrensaPáginasng-dian-fortalece-seguridad-de-catalogo-de-factura-electronica\nLa DIAN fortalece la seguridad del Catálogo de factura electrónica\nLa DIAN fortalece la seguridad del Catálogo de factura electrónica\n23/07/2026\nBogotá D.C\nImagen de la página\nLeyenda de imagen\nLea la nota y conozca la nueva medida que implementará la entidad para promover la seguridad de la información de los contribuyentes.\nContenido de la página\nLa Dirección de Impuestos y Aduanas Nacion", "en_materia": true, "es_acto_normativo": false, "urls_equivalentes": ["https://www.dian.gov.co/Prensa/Paginas/ng-dian-fortalece-seguridad-de-catalogo-de-factura-electronica.aspx"], "nota": "Aviso operativo: cambia el comportamiento de un servicio sin que medie una resolución. No es norma.", "nuevo": false, "linea_base": false}]};
+const SUPABASE_URL = "https://opubohdkfhlfvzvjtecp.supabase.co", SUPABASE_KEY = "sb_publishable_L-62PJI-5jTgwUo3xQqapw_WFbERAjO";
+
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c =>
+  ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+// Tablas de presentación. Los glifos y etiquetas son del lenguaje visual del
+// diseño; las DEFINICIONES son las del SKILL de este proyecto, no del mockup.
+const SEV = {
+  bloqueante:{et:"Bloqueante", gl:"◆", rango:0,
+    def:"Un documento emitido con la lógica actual sería rechazado en validación, o el emisor quedaría en incumplimiento formal, a partir de una fecha cierta."},
+  mayor:{et:"Mayor", gl:"▲", rango:1,
+    def:"Obliga a un cambio de producto antes de una fecha cierta, pero no rompe la emisión mientras tanto."},
+  menor:{et:"Menor", gl:"●", rango:2,
+    def:"Informativo, aclaratorio o de plazo abierto. No obliga a cambiar nada en una fecha determinada."},
+  requiere_revision_humana:{et:"Requiere revisión humana", gl:"?", rango:3,
+    def:"El cambio se detectó pero la evidencia capturada no alcanza para determinar la consecuencia. No se rellena por rellenar."},
+};
+const GAP = {
+  cubierto:{et:"Cubierto", corto:"Cubierto", gl:"✓",
+    def:"Hay evidencia pública de que el producto ya satisface el requisito."},
+  parcial:{et:"Parcial", corto:"Parcial", gl:"◑",
+    def:"Hay evidencia de que la capacidad existe, pero no de que cubra el requisito completo."},
+  no_cubierto:{et:"No cubierto", corto:"No cubierto", gl:"✗",
+    def:"Hay evidencia de que el producto NO satisface el requisito. Es una afirmación sobre el producto."},
+  sin_evidencia:{et:"Sin evidencia", corto:"Sin evidencia", gl:"—",
+    def:"No hay evidencia pública en un sentido ni en otro. NO es lo mismo que «no cubierto»: decir que no hay evidencia es cierto; decir que no lo cubre sería inventado."},
+};
+const CITA = {
+  verificada:{et:"Cita verificada", gl:"✓",
+    def:"La cita aparece literalmente en el snapshot capturado, normalizando solo espacios y mayúsculas."},
+  no_verifica:{et:"La cita no verifica", gl:"✗",
+    def:"La cita NO aparece en el snapshot. El problema es la cita, y por eso el cambio no se publica."},
+  no_se_pudo_comprobar:{et:"Sin comprobar", gl:"?",
+    def:"No se pudo leer el snapshot, así que la cita no se comprobó. No dice nada sobre la cita: dice que el radar no pudo mirar."},
+};
+const v = n => `var(${n})`;
+const cssSev = s => ({c:v("--sev-"+s), bg:v("--sev-"+s+"-bg"), b:v("--sev-"+s+"-borde")});
+const cssGap = g => ({c:v("--gap-"+g), bg:v("--gap-"+g+"-bg"), b:v("--gap-"+g+"-borde")});
+const cssCita = e => ({c:v("--cita-"+e), bg:v("--cita-"+e+"-bg"), b:v("--cita-"+e+"-borde")});
+
+// Ancla estable: se deriva del cambio, no de su posición. Si mañana el orden
+// cambia entre barridos, el enlace sigue apuntando al mismo cambio.
+function ancla(c){
+  return "c-" + (String(c.documento||"") + "-" + String(c.articulo||""))
+    .toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+    .replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"");
+}
+
+function mapear(c){
+  const sev = SEV[c.severidad] ? c.severidad : "requiere_revision_humana";
+  const gap = GAP[c.gap_estado] ? c.gap_estado : "sin_evidencia";
+  const ec  = CITA[c.estado_cita] ? c.estado_cita : "no_se_pudo_comprobar";
+  const d = c.dias_hasta_obligatoriedad;
+  return Object.assign({}, c, {
+    sev, gap, ec, ancla: ancla(c),
+    diasValor: d===null||d===undefined ? "—" : (d<=0 ? "0" : String(d)),
+    diasCorto: d===null||d===undefined ? "sin fecha" : (d<=0 ? "en vigencia" : "días"),
+    diasColor: d===null||d===undefined ? v("--texto-tenue")
+      : (d<=0 ? v("--sev-bloqueante") : v("--titular")),
+  });
+}
+
+function contador(d){
+  if(d===null||d===undefined) return "sin fecha cierta";
+  if(d<=0) return "ya en vigencia";
+  return d + " día" + (d===1?"":"s") + " para la obligatoriedad";
+}
+
+// Los días entre vigencia y detección significan dos cosas distintas. Si el
+// cambio ya existía cuando el radar empezó a vigilar, la cifra mide su
+// antigüedad y NADA sobre el sistema. El criterio no es un umbral de días.
+function velocidad(c){
+  const d = c.dias_publicacion_a_deteccion;
+  if(d===null||d===undefined) return "";
+  if(c.arranque_en_frio) return `<span><span class="chip" style="color:var(--texto-tenue);background:var(--fondo-alt);border-color:var(--borde-fuerte)">caso histórico · arranque en frío</span> ${esc(d)} días entre la vigencia y esta primera detección. Mide la antigüedad del cambio, no el tiempo de respuesta del radar: ya estaba publicado cuando el radar empezó a vigilar.</span>`;
+  return `<span><span class="chip" style="color:var(--gap-cubierto);background:var(--gap-cubierto-bg);border-color:var(--gap-cubierto-borde)">velocidad real</span> detectado ${esc(d)} día${d===1?"":"s"} después de su vigencia, con el radar ya en funcionamiento.</span>`;
+}
+
+// ── estado de la vista, reflejado en la URL para que sea enlazable ──────────
+const est = {q:"", agrupar:"severidad", orden:"severidad", sevs:new Set(Object.keys(SEV)),
+             gap:"", doc:"", capa:"", campoFecha:"vigencia", rango:"", desde:"", hasta:"",
+             sel:null, vista:"cambios"};
+let DATOS = null, VIVO = false;
+
+function leerURL(){
+  const p = new URLSearchParams(location.search);
+  if(p.get("q")) est.q = p.get("q");
+  if(p.get("agrupar")) est.agrupar = p.get("agrupar");
+  if(p.get("orden")) est.orden = p.get("orden");
+  if(p.get("sev")) est.sevs = new Set(p.get("sev").split(",").filter(s=>SEV[s]));
+  if(p.get("gap")) est.gap = p.get("gap");
+  if(p.get("doc")) est.doc = p.get("doc");
+  if(p.get("capa")) est.capa = p.get("capa");
+  if(p.get("campo")) est.campoFecha = p.get("campo");
+  if(p.get("rango")) est.rango = p.get("rango");
+  if(p.get("desde")) est.desde = p.get("desde");
+  if(p.get("hasta")) est.hasta = p.get("hasta");
+  if(["crono","docs"].includes(p.get("vista"))) est.vista = p.get("vista");
+  if(location.hash.startsWith("#c-")) est.sel = location.hash.slice(1);
+}
+function urlVista(){
+  const p = new URLSearchParams();
+  if(est.q) p.set("q", est.q);
+  if(est.agrupar!=="severidad") p.set("agrupar", est.agrupar);
+  if(est.orden!=="severidad") p.set("orden", est.orden);
+  if(est.sevs.size !== Object.keys(SEV).length) p.set("sev", [...est.sevs].join(","));
+  if(est.gap) p.set("gap", est.gap);
+  if(est.doc) p.set("doc", est.doc);
+  if(est.capa) p.set("capa", est.capa);
+  if(est.campoFecha!=="vigencia") p.set("campo", est.campoFecha);
+  if(est.rango) p.set("rango", est.rango);
+  if(est.desde) p.set("desde", est.desde);
+  if(est.hasta) p.set("hasta", est.hasta);
+  if(est.vista!=="cambios") p.set("vista", est.vista);
+  const qs = p.toString();
+  return location.origin + location.pathname + (qs?"?"+qs:"") + (est.sel?"#"+est.sel:"");
+}
+function sincronizarURL(){
+  history.replaceState(null, "", urlVista().replace(location.origin,""));
+}
+
+// ── filtrado ────────────────────────────────────────────────────────────────
+function fechaDe(c){
+  const f = est.campoFecha==="detectado" ? c.detectado_en
+          : est.campoFecha==="documento" ? c.documento_fecha
+          : (c.fecha_vigencia || null);
+  return f ? String(f).slice(0,10) : null;
+}
+function limites(){
+  if(est.rango==="libre") return [est.desde||null, est.hasta||null];
+  if(!est.rango) return [null, null];
+  const base = (DATOS.barrido || DATOS.generado || "").slice(0,10);
+  if(!base) return [null,null];
+  // Aritmética en UTC sobre una fecha suelta. Con `new Date("...T00:00:00")` la
+  // fecha se interpreta en el reloj de quien mira y `toISOString()` la devuelve
+  // en UTC: a un evaluador al este de Greenwich el rango le empezaba un día
+  // antes. La fecha del barrido es un dato del radar, no del visitante.
+  const b = new Date(base+"T00:00:00Z");
+  return [new Date(b.getTime()-Number(est.rango)*86400000).toISOString().slice(0,10), base];
+}
+function filtrar(cs){
+  const [d,h] = limites();
+  const q = est.q.trim().toLowerCase();
+  return cs.filter(c => {
+    if(!est.sevs.has(c.sev)) return false;
+    if(est.gap && c.gap!==est.gap) return false;
+    if(est.doc && c.documento!==est.doc) return false;
+    if(est.capa && (c.capa||"B")!==est.capa) return false;
+    if(d||h){
+      const f = fechaDe(c);
+      // Un cambio sin fecha cierta NO se oculta: esconderlo afirmaría que está
+      // fuera del periodo, y lo cierto es que no se sabe.
+      if(f && ((d && f<d) || (h && f>h))) return false;
+    }
+    if(q){
+      const heno = [c.documento,c.articulo,c.area_producto,c.que_se_rompe,
+                    c.cita_literal,c.accion_requerida].join(" ").toLowerCase();
+      if(!heno.includes(q)) return false;
+    }
+    return true;
+  });
+}
+function ordenar(cs){
+  const s = cs.slice();
+  if(est.orden==="detectado") s.sort((a,b)=>String(b.detectado_en||"").localeCompare(String(a.detectado_en||"")));
+  else if(est.orden==="dias") s.sort((a,b)=>{
+    const x=a.dias_hasta_obligatoriedad, y=b.dias_hasta_obligatoriedad;
+    if(x===null||x===undefined) return 1; if(y===null||y===undefined) return -1; return x-y;});
+  else s.sort((a,b)=>SEV[a.sev].rango-SEV[b.sev].rango);
+  return s;
+}
+function agrupar(cs){
+  if(est.agrupar==="ninguna") return [{titulo:"Todos los cambios", color:v("--texto-tenue"),
+    sub:cs.length+" cambio(s)", nota:null, items:cs}];
+  const llave = c => est.agrupar==="documento" ? c.documento
+    : est.agrupar==="area" ? (c.area_producto||"Sin área asignada")
+    : est.agrupar==="fecha" ? (c.detectado_en||"sin fecha")
+    : c.sev;
+  const orden = est.agrupar==="severidad" ? Object.keys(SEV) : null;
+  const m = new Map();
+  for(const c of cs){ const k=llave(c); if(!m.has(k)) m.set(k,[]); m.get(k).push(c); }
+  let claves = [...m.keys()];
+  if(orden) claves.sort((a,b)=>orden.indexOf(a)-orden.indexOf(b));
+  else claves.sort();
+  return claves.map(k => ({
+    titulo: est.agrupar==="severidad" ? SEV[k].et : k,
+    color: est.agrupar==="severidad" ? cssSev(k).c : v("--texto-tenue"),
+    sub: m.get(k).length + " cambio(s)",
+    nota: est.agrupar==="severidad" ? SEV[k].def : null,
+    items: m.get(k)}));
+}
+
+// ── diff por palabras ───────────────────────────────────────────────────────
+function diffPalabras(antes, despues){
+  const A = String(antes||"").split(/(\s+)/), B = String(despues||"").split(/(\s+)/);
+  const n=A.length, m=B.length;
+  // Subsecuencia común más larga. Con textos de artículo el tamaño es manejable.
+  const tope = 900;
+  if(n>tope || m>tope) return [{t:despues||"", k:"="}];
+  const L = Array.from({length:n+1},()=>new Uint16Array(m+1));
+  for(let i=n-1;i>=0;i--) for(let j=m-1;j>=0;j--)
+    L[i][j] = A[i]===B[j] ? L[i+1][j+1]+1 : Math.max(L[i+1][j], L[i][j+1]);
+  const out=[]; let i=0,j=0;
+  const push=(t,k)=>{ if(!t) return; const u=out[out.length-1];
+    if(u&&u.k===k) u.t+=t; else out.push({t,k}); };
+  while(i<n&&j<m){
+    if(A[i]===B[j]){ push(A[i],"="); i++; j++; }
+    else if(L[i+1][j]>=L[i][j+1]){ push(A[i],"-"); i++; }
+    else { push(B[j],"+"); j++; }
+  }
+  while(i<n){ push(A[i],"-"); i++; }
+  while(j<m){ push(B[j],"+"); j++; }
+  return out;
+}
+
+// ── piezas ──────────────────────────────────────────────────────────────────
+function pintarCapas(){
+  document.getElementById("capas").innerHTML = (DATOS.capas||[]).map(c => {
+    const deg = String(c.estado).toLowerCase().startsWith("degrad");
+    return `<div class="capa">
+      <div class="top">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="clave">${esc(c.clave)}</span><span class="nom">${esc(c.nombre)}</span>
+        </div>
+        <span class="est ${deg?"degradado":"aldia"}">${esc(c.estado)}</span>
+      </div>
+      <div class="preg">${esc(c.pregunta)}</div>
+      <div class="meta"><span>${esc(c.fuentes)}</span><span>${esc(c.cadencia)}</span>
+        <span>${esc(c.barrido)}</span></div>
+      ${c.incidencia ? `<div class="inc">${esc(c.incidencia)}</div>` : ""}
+    </div>`;
+  }).join("");
+}
+
+function pintarGlosario(){
+  const filas = [];
+  for(const [k,s] of Object.entries(SEV)) filas.push([cssSev(k), s.gl, s.et, s.def]);
+  for(const [k,g] of Object.entries(GAP)) filas.push([cssGap(k), g.gl, g.et, g.def]);
+  for(const [k,c] of Object.entries(CITA)) filas.push([cssCita(k), c.gl, c.et, c.def]);
+  document.getElementById("glosario").innerHTML = filas.map(([css,gl,et,df]) =>
+    `<p class="it"><span class="chip" style="color:${css.c};background:${css.bg};border-color:${css.b}">${esc(gl)} ${esc(et)}</span>${esc(df)}</p>`).join("");
+}
+
+// El titular se CALCULA. Nunca se escribe a mano, y con cero bloqueantes no dice
+// ni una alarma que no existe ni un "todo en orden" que el radar no puede saber.
+function titular(cs){
+  const n = s => cs.filter(c=>c.sev===s).length;
+  const b = n("bloqueante"), may = n("mayor"), rev = n("requiere_revision_humana");
+  if(b) return `Hay ${b} cambio${b===1?"":"s"} bloqueante${b===1?"":"s"} sin resolver`;
+  if(may) return `No hay bloqueantes abiertos; ${may} cambio${may===1?"":"s"} mayor${may===1?"":"es"} pide${may===1?"":"n"} trabajo`;
+  if(rev) return `No hay bloqueantes ni mayores; ${rev} cambio${rev===1?"":"s"} espera${rev===1?"":"n"} lectura humana`;
+  if(cs.length) return `No hay bloqueantes abiertos entre los ${cs.length} cambios vigilados`;
+  return "No hay cambios publicables en este momento";
+}
+
+function pintarKpis(cs, r){
+  const nb = cs.filter(c=>c.sev==="bloqueante").length;
+  const nm = cs.filter(c=>c.sev==="mayor").length;
+  const conFecha = cs.filter(c=>typeof c.dias_hasta_obligatoriedad==="number");
+  const prox = conFecha.length ? Math.min(...conFecha.map(c=>c.dias_hasta_obligatoriedad)) : null;
+  const kpis = [
+    {et:"Bloqueantes abiertos", val:nb, uni:nb===1?"cambio":"cambios", col:nb?v("--sev-bloqueante"):v("--titular"),
+     nota: nb ? "Emisiones que serían rechazadas en validación desde una fecha cierta."
+              : "Ningún cambio detectado rompe la emisión a una fecha cierta."},
+    {et:"Mayores por atender", val:nm, uni:nm===1?"cambio":"cambios", col:nm?v("--sev-mayor"):v("--titular"),
+     nota:"Obligan a un cambio de producto antes de una fecha cierta, sin romper la emisión."},
+    {et:"Plazo más próximo", val: prox===null?"—":(prox<=0?"0":prox),
+     uni: prox===null?"sin fecha cierta":(prox<=0?"ya en vigencia":"días"),
+     col: prox===null?v("--texto-tenue"):(prox<=0?v("--sev-bloqueante"):v("--titular")),
+     nota: prox===null ? "Ningún cambio publicado tiene fecha de obligatoriedad determinada."
+                       : "Días hasta la obligatoriedad del cambio más urgente."},
+    {et:"Documentos vigilados", val:(r.documentos_vigilados||0), uni:"fuentes", col:v("--titular"),
+     nota:"Actos y documentos del listado de la DIAN bajo vigilancia diaria.",
+     rot: r.retenidos_no_comprobables ? r.retenidos_no_comprobables+" cambio(s) sin comprobar" : null},
+  ];
+  document.getElementById("kpis").innerHTML = kpis.map(k =>
+    `<div class="kpi"><div class="et">${esc(k.et)}</div>
+     <div class="v"><b style="color:${k.col}">${esc(k.val)}</b><span>${esc(k.uni)}</span></div>
+     <div class="nota">${esc(k.nota)}</div>
+     ${k.rot?`<div class="rot">${esc(k.rot)}</div>`:""}</div>`).join("");
+}
+
+function pintarFila(c){
+  const s = cssSev(c.sev), g = cssGap(c.gap);
+  return `<button class="fila" id="${esc(c.ancla)}" data-ancla="${esc(c.ancla)}"
+    aria-current="${est.sel===c.ancla}" style="border-left-color:${s.c}">
+    <span class="izq">
+      <span class="l1">
+        <span class="chip" style="color:${s.c};background:${s.bg};border-color:${s.b}">${esc(SEV[c.sev].gl)}</span>
+        <span class="tt">${esc(c.documento)} · ${esc(c.articulo)}</span>
+      </span>
+      <span class="ar">${esc(c.area_producto || "Área de producto sin determinar")}</span>
+    </span>
+    <span class="der">
+      <span class="chipg" style="color:${g.c};background:${g.bg};border-color:${g.b}">${esc(GAP[c.gap].gl)} ${esc(GAP[c.gap].corto)}</span>
+      <span class="dias"><b style="color:${c.diasColor}">${esc(c.diasValor)}</b><span>${esc(c.diasCorto)}</span></span>
+    </span>
+  </button>`;
+}
+
+function pintarDetalle(c){
+  const cont = document.getElementById("detalle");
+  const tab = document.getElementById("tablero");
+  if(!c){ cont.innerHTML=""; tab.classList.remove("condetalle"); return; }
+  tab.classList.add("condetalle");
+  const s=cssSev(c.sev), g=cssGap(c.gap), vf=cssCita(c.ec);
+  const segs = diffPalabras(c.texto_antes, c.texto_despues).map(x =>
+    x.k==="+" ? `<ins>${esc(x.t)}</ins>` : x.k==="-" ? `<del>${esc(x.t)}</del>` : `<span>${esc(x.t)}</span>`).join("");
+  const evid = (c.evidencia_usada||[]).length
+    ? (c.evidencia_usada.length + " página(s) del help center sostienen esta lectura")
+    : "Sin páginas de producto que sostengan una lectura del gap.";
+  cont.innerHTML = `<div class="detalle">
+   <div class="dcab">
+    <button class="volver" data-volver>&larr; Volver a la lista</button>
+    <button class="cerrar" data-volver type="button" aria-label="Cerrar el detalle"
+     title="Cerrar el detalle">&times;</button>
+    <div style="display:flex;flex-wrap:wrap;gap:10px 14px;align-items:flex-start;justify-content:space-between">
+     <div style="min-width:0;flex:1 1 260px">
+      <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:8px">
+       <span class="chip" style="font-size:12.5px;line-height:18px;padding:3px 10px;border-radius:8px;color:${s.c};background:${s.bg};border-color:${s.b}">${esc(SEV[c.sev].gl)} ${esc(SEV[c.sev].et)}</span>
+       <span class="chip" style="font-size:12px;line-height:18px;padding:3px 9px;border-radius:8px;font-weight:500;color:var(--texto-secundario);background:var(--fondo-alt);border-color:var(--borde)">${esc(String(c.tipo||"").replace(/_/g," "))}</span>
+       <span style="font-size:12px;line-height:18px;font-weight:500;color:var(--texto-tenue)">Capa ${esc(c.capa||"B")}</span>
+      </div>
+      <h3>${esc(c.documento)} · ${esc(c.articulo)}</h3>
+      <div class="dsub">Área afectada: ${esc(c.area_producto || "sin determinar")}</div>
+     </div>
+     <div style="flex:1 1 140px;min-width:120px;text-align:right">
+      <div class="rotulo" style="margin:0">${esc(c.dias_hasta_obligatoriedad===null||c.dias_hasta_obligatoriedad===undefined?"Sin fecha cierta":"Plazo")}</div>
+      <div style="font-size:38px;line-height:44px;font-weight:600;letter-spacing:-1.4px;color:${c.diasColor}">${esc(c.diasValor)}</div>
+      <div style="font-size:12.5px;line-height:17px;color:var(--texto-secundario)">${esc(contador(c.dias_hasta_obligatoriedad))}</div>
+     </div>
+    </div>
+   </div>
+   <div class="dcuerpo">
+    <div>
+     <div class="rotulo">Qué se rompe en producto</div>
+     <p class="impacto">${c.que_se_rompe ? esc(c.que_se_rompe)
+       : "<i>Sin determinar. La evidencia capturada no alcanza, y no se rellena por rellenar.</i>"}</p>
+    </div>
+    <div class="caja"><div class="rotulo">Acción requerida</div>
+     <p>${esc(c.accion_requerida || "—")}</p></div>
+    <!-- Plegado por defecto: el diff es la mayor parte del largo del panel y casi
+         nunca es lo primero que se quiere leer. El encabezado queda visible. -->
+    <details class="diff">
+     <summary class="dh"><span>Texto antes y después</span></summary>
+     <div class="db">
+      <div class="nota">Comparación palabra por palabra entre la redacción anterior y la vigente, tal como aparecen en el snapshot capturado.</div>
+      <div class="txt">${segs || "<span>(sin texto que comparar)</span>"}</div>
+      <div class="nota">Confirmado por: ${esc((c.confirmado_por||[]).join(", ") || "una sola vía")}${
+        c.coincidencia_vias!=null ? " · concordancia entre las dos vías de detección: "+Math.round(c.coincidencia_vias*100)+"%" : ""}</div>
+     </div>
+    </details>
+    <div class="cita">
+     <div class="ch">
+      <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">
+       <span class="ct">Cita literal del artículo</span>
+       <span class="chip" style="font-size:11.5px;line-height:16px;padding:2px 8px;color:${vf.c};background:${vf.bg};border-color:${vf.b}">${esc(CITA[c.ec].gl)} ${esc(CITA[c.ec].et)}</span>
+      </div>
+      <button class="bp" data-copiar-cita="${esc(c.ancla)}">Copiar cita</button>
+     </div>
+     <blockquote>${esc(c.cita_literal || "")}</blockquote>
+    </div>
+    <details class="diff">
+     <summary class="dh"><span>Brecha frente al producto y fuentes</span>
+      <span class="chipg" style="color:${g.c};background:${g.bg};border-color:${g.b}">${esc(GAP[c.gap].gl)} ${esc(GAP[c.gap].et)}</span></summary>
+     <div class="db">
+      <div class="dgap">
+       <div class="gc" style="border-color:${g.b};background:${g.bg}">
+        <div class="gt" style="color:${g.c}">${esc(GAP[c.gap].gl)} ${esc(GAP[c.gap].et)}</div>
+        <div class="gd">${esc(c.gap_nota || GAP[c.gap].def)}</div>
+        <div class="ge">${esc(evid)}</div>
+       </div>
+       <div class="enl">
+        <a href="${esc(c.url_origen)}" target="_blank" rel="noopener">↗ Artículo en el normograma de la DIAN</a>
+        ${c.url_modificatoria?`<a href="${esc(c.url_modificatoria)}" target="_blank" rel="noopener">↗ Norma que introdujo el cambio</a>`:""}
+       </div>
+      </div>
+     </div>
+    </details>
+    <div class="nota" style="font-size:12px;color:var(--texto-tenue)">${velocidad(c)}</div>
+   </div>
+   <div class="dpie">
+    <span>Modificado por ${esc(c.modificado_por||"—")} · detectado ${esc(c.detectado_en||"—")} · norma base del ${esc(c.documento_fecha||"—")}</span>
+    <button class="bt" data-copiar-vista>Copiar enlace de esta vista</button>
+   </div>
+  </div>`;
+}
+
+function pintarCrono(cs){
+  const cont = document.getElementById("crono-cuerpo");
+  const conf = cs.filter(c=>fechaDe(c)).sort((a,b)=>fechaDe(b).localeCompare(fechaDe(a)));
+  if(!conf.length){
+    cont.innerHTML = `<div class="vacio" style="padding:28px 20px">
+      <div class="vt" style="font-size:16px;line-height:24px">Todavía no hay línea de tiempo que mostrar</div>
+      <div class="vd" style="font-size:14px">Los cambios publicados no tienen una fecha con la que ordenarlos, o el filtro activo los dejó fuera. La cronología se puebla sola conforme el radar detecte cambios con fecha; no se rellena con ejemplos.</div></div>`;
+    return;
+  }
+  const anios = [...new Set(conf.map(c=>fechaDe(c).slice(0,4)))];
+  const salto = anios.length>1 ? `<div class="saltar"><span class="r">Saltar a</span>${
+    anios.map(a=>`<a href="#anio-${esc(a)}">${esc(a)} <span style="font-weight:500;opacity:.65">${
+      conf.filter(c=>fechaDe(c).startsWith(a)).length}</span></a>`).join("")}</div>` : "";
+  let html = salto, actual = null;
+  for(const c of conf){
+    const a = fechaDe(c).slice(0,4);
+    if(a!==actual){
+      actual = a;
+      const n = conf.filter(x=>fechaDe(x).startsWith(a)).length;
+      html += `<div class="marca-anio" id="anio-${esc(a)}"><div class="a">${esc(a)}</div>
+        <div class="l"><i></i></div>
+        <div class="r"><span>${n} cambio${n===1?"":"s"}</span><i></i></div></div>`;
+    }
+    const s = cssSev(c.sev);
+    html += `<div class="hito">
+      <div class="f">${esc(fechaDe(c))}</div>
+      <div class="l"><i class="sup"></i><b style="background:${s.c}"></b><i class="inf"></i></div>
+      <div class="c">
+       <div class="l1">
+        <span class="chip" style="font-size:11.5px;line-height:16px;padding:1px 8px;color:${s.c};background:${s.bg};border-color:${s.b}">${esc(SEV[c.sev].gl)} ${esc(SEV[c.sev].et)}</span>
+        <a href="#${esc(c.ancla)}" data-ir="${esc(c.ancla)}">${esc(c.documento)} · ${esc(c.articulo)}</a>
+       </div>
+       <div class="rr">${esc(c.area_producto || "Área de producto sin determinar")}</div>
+      </div></div>`;
+  }
+  cont.innerHTML = html;
+}
+
+// La tabla de documentos crece con cada barrido, así que tiene que ser usable
+// con cientos de filas: orden y filtro por tipo y por año. Sin paginación —con
+// orden y filtro alcanza, y una paginación inventada añade estado que mantener.
+const estDocs = {tipo:"", anio:"", orden:"fecha-desc"};
+
+function fechaDoc(p){ return String(p.fecha_documento || (p.anio ? p.anio+"-01-01" : "") || ""); }
+
+function pintarDocs(){
+  const todos = DATOS.publicaciones || [];
+  const tipos = [...new Set(todos.map(p=>p.tipo).filter(Boolean))].sort();
+  const anios = [...new Set(todos.map(p=>String(p.anio||"").slice(0,4)).filter(Boolean))]
+    .sort().reverse();
+  const st = document.getElementById("docs-tipo");
+  if(st.options.length !== tipos.length+1){
+    st.innerHTML = `<option value="">Tipo: todos</option>` +
+      tipos.map(t=>`<option value="${esc(t)}">${esc(t)}</option>`).join("");
+    st.value = estDocs.tipo;
+  }
+  const sa = document.getElementById("docs-anio");
+  if(sa.options.length !== anios.length+1){
+    sa.innerHTML = `<option value="">Año: todos</option>` +
+      anios.map(a=>`<option value="${esc(a)}">${esc(a)}</option>`).join("");
+    sa.value = estDocs.anio;
+  }
+
+  let fs = todos.filter(p =>
+    (!estDocs.tipo || p.tipo===estDocs.tipo) &&
+    (!estDocs.anio || String(p.anio||"")===estDocs.anio));
+  fs = fs.slice().sort((a,b)=>{
+    if(estDocs.orden==="titulo") return String(a.titulo||"").localeCompare(String(b.titulo||""));
+    if(estDocs.orden==="tipo") return String(a.tipo||"").localeCompare(String(b.tipo||""));
+    const x = fechaDoc(a), y = fechaDoc(b);
+    return estDocs.orden==="fecha-asc" ? x.localeCompare(y) : y.localeCompare(x);
+  });
+
+  document.getElementById("docs-cuenta").textContent =
+    fs.length===todos.length ? `${todos.length} documento(s)`
+                             : `${fs.length} de ${todos.length} documento(s)`;
+  document.querySelector("#pubs tbody").innerHTML = fs.map(p =>
+    `<tr><td>${esc(p.fecha_documento || p.anio || "s/f")}</td>
+     <td><a href="${esc(p.url_origen)}" target="_blank" rel="noopener">${esc(p.titulo)}</a></td>
+     <td>${esc(p.tipo)}</td></tr>`).join("");
+}
+
+// ── render principal ────────────────────────────────────────────────────────
+function pintar(){
+  const r = DATOS.resumen || {};
+  const todos = (DATOS.cambios||[]).map(mapear);
+
+  document.getElementById("tira").textContent =
+    (VIVO ? "Datos en vivo" : "Último estado conocido") + " · " +
+    (r.cambios_publicados||0) + " cambio(s) publicados";
+  const org = document.getElementById("origen");
+  org.classList.toggle("respaldo", !VIVO);
+  document.getElementById("origen-a").textContent =
+    VIVO ? "Datos en vivo desde Supabase" : "Supabase no respondió · respaldo del repositorio";
+  // Ya viene resuelto a hora de Colombia desde el generador. Antes se pintaba la
+  // marca cruda, que venía en UTC del contenedor de Actions: un barrido de las
+  // 19:25 se leía como «2026-08-06T00:25:53», es decir, mañana.
+  document.getElementById("origen-b").textContent =
+    "Último barrido: " + (DATOS.barrido_texto || "—");
+
+  document.getElementById("titular").textContent = titular(todos);
+  pintarKpis(todos, r);
+  pintarCapas();
+
+  const cs = ordenar(filtrar(todos));
+
+  // chips de severidad, con su conteo real
+  document.getElementById("chips-sev").innerHTML = Object.keys(SEV).map(k=>{
+    const c = cssSev(k), n = todos.filter(x=>x.sev===k).length;
+    return `<button class="fsev" data-sev="${k}" aria-pressed="${est.sevs.has(k)}"
+      style="color:${c.c};background:${c.bg};border-color:${c.b}">
+      <span>${esc(SEV[k].gl)}</span><span>${esc(SEV[k].et)}</span><span class="n">${n}</span></button>`;
+  }).join("");
+
+  const docs = [...new Set(todos.map(c=>c.documento).filter(Boolean))];
+  const sd = document.getElementById("fdoc");
+  sd.innerHTML = `<option value="">Documento: todos</option>` +
+    docs.map(d=>`<option value="${esc(d)}">${esc(d)}</option>`).join("");
+  sd.value = est.doc;
+
+  const activos = [est.q, est.gap, est.doc, est.capa, est.rango].filter(Boolean).length +
+    (est.sevs.size!==Object.keys(SEV).length ? 1 : 0);
+  const hayFiltros = activos > 0;
+  document.getElementById("limpiar").hidden = !hayFiltros;
+  // El número de filtros activos se ve en el control cerrado: saber qué está
+  // aplicado no debe exigir abrir el cajón.
+  const nAct = document.getElementById("filtros-activos");
+  nAct.textContent = activos;
+  nAct.hidden = !hayFiltros;
+  document.getElementById("tiempo").classList.toggle("on", !!est.rango);
+  document.getElementById("libre").hidden = est.rango!=="libre";
+  const cont = document.getElementById("contador");
+  cont.textContent = cs.length===todos.length
+    ? `${todos.length} cambio(s)` : `${cs.length} de ${todos.length} cambio(s)`;
+  cont.style.color = v("--texto-secundario");
+  cont.style.background = v("--fondo-alt");
+  cont.style.borderColor = v("--borde");
+
+  const avisos = [];
+  if(r.retenidos_no_comprobables)
+    avisos.push(r.retenidos_no_comprobables + " cambio(s) quedaron SIN COMPROBAR porque no se pudo leer su snapshot. No se publican, pero el motivo no es que su cita falle: es que el radar no pudo mirar la fuente. Son cosas distintas y se cuentan por separado.");
+  if(r.retenidos_cita_no_verifica)
+    avisos.push(r.retenidos_cita_no_verifica + " cambio(s) NO se muestran: su cita literal no aparece en el snapshot capturado. Se retienen a propósito — la regla de trazabilidad no admite excepciones.");
+  if(DATOS.deteccion_linea_base){
+    const normas = [...new Set(todos.map(c=>c.modificado_por).filter(Boolean))];
+    avisos.push("Los cambios" + (normas.length?" de "+normas.join(" y "):"") +
+      " son un ARRANQUE EN FRÍO: ya estaban publicados cuando el radar empezó a correr, así que su conteo de días mide la antigüedad del cambio y no dice nada sobre cuánto tarda este sistema en avisar.");
+  }
+  document.getElementById("aviso").innerHTML =
+    avisos.map(a=>`<div class="aviso">${esc(a)}</div>`).join("");
+
+  // lista agrupada, o estado vacío honesto
+  const lista = document.getElementById("lista");
+  if(!cs.length){
+    const nc = r.retenidos_no_comprobables||0, nv = r.retenidos_cita_no_verifica||0;
+    let t, d;
+    if(!todos.length && nc){
+      t = "El radar no pudo comprobar sus propias citas";
+      d = `Hay ${nc} cambio(s) detectado(s) cuyo snapshot no se pudo leer, así que no se publican. Esto NO significa que no haya cambios normativos: significa que el radar no pudo mirar la fuente para confirmarlos. Revisar la captura antes de sacar conclusiones de esta pantalla.`;
+    } else if(!todos.length && nv){
+      t = "Hay cambios detectados, pero ninguno con cita que se sostenga";
+      d = `${nv} cambio(s) tienen una cita literal que no aparece en el snapshot capturado. Se retienen a propósito: la regla de trazabilidad no admite excepciones.`;
+    } else if(!todos.length){
+      t = "Sin cambios que reportar";
+      d = "El radar capturó las fuentes y comparó contra la captura anterior sin encontrar diferencias en el articulado. Esto sí es ausencia de novedad, no ausencia de vigilancia.";
+    } else {
+      t = "Ningún cambio coincide con los filtros";
+      d = "Hay cambios publicados, pero los filtros activos los dejan todos fuera. Quita alguno para volver a verlos.";
+    }
+    lista.innerHTML = `<div class="vacio">
+      <div class="aro"><span></span></div>
+      <div class="vt">${esc(t)}</div><div class="vd">${esc(d)}</div>
+      <div class="va">${est.rango?`<button class="bp" id="quitar-tiempo">Quitar el filtro de tiempo</button>`:""}
+       ${hayFiltros?`<button class="bt" id="quitar-todo">Quitar todos los filtros</button>`:""}</div></div>`;
+  } else {
+    lista.innerHTML = agrupar(cs).map(g => `<section class="grupo">
+      <div class="gc"><h2 style="color:${g.color}">${esc(g.titulo)}</h2>
+       <span class="gs">${esc(g.sub)}</span></div>
+      ${g.nota?`<div class="gn">${esc(g.nota)}</div>`:""}
+      ${g.items.map(pintarFila).join("")}
+    </section>`).join("");
+  }
+
+  pintarDetalle(est.sel ? cs.find(c=>c.ancla===est.sel) || todos.find(c=>c.ancla===est.sel) : null);
+  pintarCrono(cs);
+
+  pintarDocs();
+
+  document.getElementById("pie-texto").textContent =
+    "Prototipo del reto técnico. No es un producto oficial de Alegra. El contenido normativo " +
+    "que se muestra proviene del pipeline de captura y cada cita está verificada contra el " +
+    "documento capturado ese día; lo que no verifica no se publica.";
+
+  medirFijos();
+  sincronizarURL();
+}
+
+// La altura del cromo fijo no es constante: depende de cuántos filtros quepan
+// por línea, que cambia con el ancho de la ventana. Se mide y se publica.
+function medirFijos(){
+  // En móvil nada de esto está fijo, así que el panel no debe descontarlo.
+  if(esMovil()){ document.documentElement.style.setProperty("--alto-fijo","0px"); return; }
+  const b = document.querySelector(".barra")?.getBoundingClientRect().height || 0;
+  const c = document.querySelector(".controles")?.getBoundingClientRect().height || 0;
+  document.documentElement.style.setProperty("--alto-fijo", Math.round(b + c + 12) + "px");
+}
+const esMovil = () => matchMedia("(max-width:1020px)").matches;
+const esTelefono = () => matchMedia("(max-width:640px)").matches;
+
+// El cajón de filtros: siempre abierto en escritorio, plegable en el teléfono.
+function ajustarCajon(){
+  const d = document.getElementById("cajon-filtros");
+  if(!d) return;
+  if(!esTelefono()) d.open = true;
+}
+addEventListener("resize", () => { medirFijos(); ajustarCajon(); });
+
+// ── interacción ─────────────────────────────────────────────────────────────
+function conectar(){
+  const on = (id,ev,fn) => document.getElementById(id).addEventListener(ev,fn);
+  on("q","input",e=>{ est.q=e.target.value; pintar(); });
+  on("agrupar","change",e=>{ est.agrupar=e.target.value; pintar(); });
+  on("orden","change",e=>{ est.orden=e.target.value; pintar(); });
+  on("fgap","change",e=>{ est.gap=e.target.value; pintar(); });
+  on("fdoc","change",e=>{ est.doc=e.target.value; pintar(); });
+  on("fcapa","change",e=>{ est.capa=e.target.value; pintar(); });
+  on("campoFecha","change",e=>{ est.campoFecha=e.target.value; pintar(); });
+  on("rango","change",e=>{ est.rango=e.target.value; pintar(); });
+  on("desde","change",e=>{ est.desde=e.target.value; pintar(); });
+  on("hasta","change",e=>{ est.hasta=e.target.value; pintar(); });
+  on("limpiar","click",()=>{ est.q=""; document.getElementById("q").value="";
+    est.gap=""; est.doc=""; est.capa=""; est.rango=""; est.desde=""; est.hasta="";
+    est.sevs=new Set(Object.keys(SEV)); pintar(); });
+
+  document.getElementById("tab-cambios").addEventListener("click",()=>cambiarVista("cambios"));
+  document.getElementById("tab-crono").addEventListener("click",()=>cambiarVista("crono"));
+  document.getElementById("tab-docs").addEventListener("click",()=>cambiarVista("docs"));
+  on("docs-tipo","change",e=>{ estDocs.tipo=e.target.value; pintarDocs(); });
+  on("docs-anio","change",e=>{ estDocs.anio=e.target.value; pintarDocs(); });
+  on("docs-orden","change",e=>{ estDocs.orden=e.target.value; pintarDocs(); });
+
+  document.addEventListener("click", ev => {
+    const chip = ev.target.closest("[data-sev]");
+    if(chip){ const k=chip.dataset.sev;
+      if(est.sevs.has(k)) est.sevs.delete(k); else est.sevs.add(k);
+      if(!est.sevs.size) est.sevs=new Set(Object.keys(SEV));
+      pintar(); return; }
+    if(ev.target.closest("[data-volver]")){
+      const vuelvo = est.sel; est.sel = null; pintar();
+      const t = vuelvo && document.getElementById(vuelvo);
+      if(t){ t.scrollIntoView({block:"center"}); t.focus({preventScroll:true}); }
+      return; }
+    const fila = ev.target.closest("[data-ancla]");
+    if(fila){ est.sel = est.sel===fila.dataset.ancla ? null : fila.dataset.ancla; pintar();
+      if(est.sel){
+        const d = document.querySelector(".detalle");
+        if(d){
+          // En móvil el detalle es su propia vista: hay que llevar la pantalla
+          // hasta arriba de él, no solo dejarlo "a la vista más cercana".
+          d.scrollIntoView({block: esMovil() ? "start" : "nearest"});
+          if(esMovil()){
+            d.setAttribute("tabindex","-1");
+            d.focus({preventScroll:true});
+          }
+        }
+      }
+      return; }
+    const ir = ev.target.closest("[data-ir]");
+    if(ir){ ev.preventDefault(); est.sel=ir.dataset.ir; cambiarVista("cambios");
+      const t=document.getElementById(est.sel); if(t){ t.scrollIntoView({block:"center"}); t.focus({preventScroll:true}); }
+      return; }
+    if(ev.target.closest("[data-copiar-vista]") || ev.target.id==="copiar-vista"){
+      copiar(urlVista(), ev.target); return; }
+    const cc = ev.target.closest("[data-copiar-cita]");
+    if(cc){ const c=(DATOS.cambios||[]).map(mapear).find(x=>x.ancla===cc.dataset.copiarCita);
+      if(c) copiar(c.cita_literal||"", cc); return; }
+    if(ev.target.id==="quitar-tiempo"){ est.rango=""; est.desde=""; est.hasta=""; pintar(); return; }
+    if(ev.target.id==="quitar-todo"){ document.getElementById("limpiar").click(); return; }
+  });
+}
+function copiar(txt, boton){
+  const antes = boton.textContent;
+  const fin = ok => { boton.textContent = ok?"Copiado":"No se pudo copiar";
+    setTimeout(()=>{boton.textContent=antes;},1600); };
+  if(navigator.clipboard && location.protocol!=="file:")
+    navigator.clipboard.writeText(txt).then(()=>fin(true),()=>fin(false));
+  else fin(false);
+}
+function cambiarVista(v2){
+  est.vista=v2;
+  for(const [t,v3] of [["tab-cambios","cambios"],["tab-crono","crono"],["tab-docs","docs"]])
+    document.getElementById(t).setAttribute("aria-selected", String(v2===v3));
+  document.getElementById("vista-cambios").hidden = v2!=="cambios";
+  document.getElementById("vista-crono").hidden = v2!=="crono";
+  document.getElementById("vista-docs").hidden = v2!=="docs";
+  // Los controles de la lista solo tienen sentido sobre la lista.
+  document.querySelector(".controles").hidden = v2!=="cambios";
+  sincronizarURL();
+}
+
+// ── carga: Supabase primero, respaldo del repositorio si no responde ─────────
+(async () => {
+  leerURL();
+  conectar();
+  document.getElementById("q").value = est.q;
+  document.getElementById("agrupar").value = est.agrupar;
+  document.getElementById("orden").value = est.orden;
+  document.getElementById("fgap").value = est.gap;
+  document.getElementById("fcapa").value = est.capa;
+  document.getElementById("campoFecha").value = est.campoFecha;
+  document.getElementById("rango").value = est.rango;
+  document.getElementById("desde").value = est.desde;
+  document.getElementById("hasta").value = est.hasta;
+  cambiarVista(est.vista);
+
+  DATOS = RESPALDO; VIVO = false;
+  const corta = new AbortController();
+  const reloj = setTimeout(()=>corta.abort(), 3000);
+  try{
+    const rr = await fetch(SUPABASE_URL + "/rest/v1/cambios?select=*,interpretaciones(*)&order=id",
+      {headers:{apikey:SUPABASE_KEY, Authorization:"Bearer "+SUPABASE_KEY}, signal:corta.signal});
+    clearTimeout(reloj);
+    if(!rr.ok) throw new Error("HTTP "+rr.status);
+    const filas = await rr.json();
+    if(!Array.isArray(filas) || !filas.length) throw new Error("sin filas");
+    const vivos = filas.map(f => {
+      const i = (f.interpretaciones && f.interpretaciones[0]) || {};
+      const base = (RESPALDO.cambios||[]).find(c => c.articulo===f.articulo) || {};
+      return Object.assign({}, base, {
+        documento:f.documento, documento_fecha:f.documento_fecha, articulo:f.articulo,
+        url_origen:f.url_origen, tipo:f.tipo,
+        severidad:i.severidad, area_producto:i.area_producto, que_se_rompe:i.que_se_rompe,
+        accion_requerida:i.accion_requerida, fecha_vigencia:i.fecha_vigencia,
+        dias_hasta_obligatoriedad:i.dias_hasta_obligatoriedad, cita_literal:i.cita_literal,
+        estado_cita: f.estado_cita || "no_se_pudo_comprobar",
+      });
+    });
+    // Cifras y tarjetas SIEMPRE de la misma fuente. Tomarlas de sitios distintos
+    // produce una pantalla que se contradice a sí misma. Ya nos mordió una vez.
+    const publicados = vivos.filter(c=>c.estado_cita==="verificada");
+    DATOS = Object.assign({}, RESPALDO, {cambios: publicados, resumen:
+      Object.assign({}, RESPALDO.resumen, {
+        cambios_publicados: publicados.length,
+        cambios_retenidos: vivos.length - publicados.length,
+        retenidos_cita_no_verifica: vivos.filter(c=>c.estado_cita==="no_verifica").length,
+        retenidos_no_comprobables: vivos.filter(c=>c.estado_cita==="no_se_pudo_comprobar").length,
+        por_severidad: publicados.reduce((a,c)=>{a[c.severidad]=(a[c.severidad]||0)+1; return a;},{}),
+      })});
+    VIVO = true;
+  }catch(e){ clearTimeout(reloj); DATOS = RESPALDO; VIVO = false; }
+
+  pintarGlosario();
+  ajustarCajon();
+  pintar();
+  if(est.sel){ const t=document.getElementById(est.sel);
+    if(t){ t.scrollIntoView({block:"center"}); t.focus({preventScroll:true}); } }
+})();
+</script>
+</body>
+</html>
